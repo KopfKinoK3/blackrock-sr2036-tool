@@ -46,6 +46,12 @@ Version **1.0** ist die stabile Erstfassung. Eine **Ausbaustufe ist in Vorbereit
 
 ## Lizenz
 
-Code unter der [MIT-Lizenz](LICENSE) — frei nutzbar, änderbar und weiterverteilbar mit Namensnennung.
+Code unter der [MIT-Lizenz](LICENSE) — frei nutzbar, änderbar und weiterverteilbar mit Namensnennung. Die MIT-Lizenz bezieht sich ausschließlich auf den Code dieses Projekts.
 
-**Marken-Hinweis:** *Shadowrun* ist eine eingetragene Marke von The Topps Company, Inc. und wird unter Lizenz von Catalyst Game Labs verwendet. Dies ist ein inoffizielles, nicht-kommerzielles Fan-Tool und steht in keiner Verbindung zu den Rechteinhabern. Die MIT-Lizenz bezieht sich ausschließlich auf den Code dieses Projekts.
+## Rechtlicher Hinweis / Disclaimer
+
+Dieses Tool ist ein reines Fan-Projekt zur Berechnung und Simulation von Würfelwürfen und dient keinen kommerziellen Zwecken.
+
+- **Marken & Urheberrechte:** *Shadowrun* ist eine eingetragene Handelsmarke (Warenzeichen) der **Topps Company, Inc.**
+- **Lizenznehmer:** Die Spielinhalte, Regeln und Begriffe basieren auf der deutschen Ausgabe von **[Pegasus Spiele](https://pegasus.de/)** unter Lizenz von **Catalyst Game Labs** und der **Topps Company, Inc.**
+- **Ausschluss:** Diese Anwendung steht in keiner offiziellen Verbindung zu Pegasus Spiele, Catalyst Game Labs oder der Topps Company, Inc. Der Programmierer erhebt keinerlei Anspruch auf die verwendeten spielspezifischen Begriffe oder das Regelsystem.
