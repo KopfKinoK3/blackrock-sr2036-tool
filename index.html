@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blackrock: Shadowrun 2036 – Tool</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #fff; color: #111; max-width: 680px; margin: 34px auto; padding: 0 20px; }
+  h1 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 12px; color: #666; margin-bottom: 16px; line-height: 1.5; }
+  small { font-size: 0.82em; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+  .tab { flex: 1; padding: 11px; border: 1px solid #ccc; border-radius: 8px; background: #fff; font-size: 14px; font-weight: 500; cursor: pointer; color: #333; transition: background .1s, border-color .1s; }
+  .tab:hover { background: #f0f0f0; }
+  .tab.active { background: #111; border-color: #111; color: #fff; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .roster-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .save-status { font-size: 11px; color: #888; }
+  .save-status.ok { color: #2e7d32; }
+  .save-status.warn { color: #e65100; }
+  .rb-actions { display: flex; gap: 6px; }
+  .mini-btn { padding: 6px 10px; border: 1px solid #ccc; border-radius: 6px; background: #fff; color: #444; font-size: 12px; font-weight: 500; cursor: pointer; transition: background .1s, border-color .1s; }
+  .mini-btn:hover { background: #f0f0f0; border-color: #999; }
+
+  /* Würfelroller */
+  .dice-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .db { width: 48px; height: 36px; border: 1px solid #ccc; border-radius: 6px; background: #fff; font-size: 12px; font-weight: 500; cursor: pointer; color: #333; }
+  .db:hover { background: #f0f0f0; }
+  .db.active { background: #111; border-color: #111; color: #fff; }
+  #rollBtn { width: 100%; padding: 12px; border: 1px solid #111; border-radius: 8px; background: #111; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; }
+  #rollBtn:hover { background: #333; }
+  .pool { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 16px; min-height: 48px; }
+  .die { width: 44px; height: 44px; border: 1px solid #ccc; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 500; }
+  .die.sm { width: 34px; height: 34px; font-size: 17px; }
+  .die.rolling { animation: shake .5s ease-in-out; }
+  .die.hit { background: #e8f5e9; border-color: #388e3c; color: #1b5e20; }
+  .die.one { background: #ffebee; border-color: #c62828; color: #7f0000; }
+  .die.miss { background: #f5f5f5; border-color: #bbb; color: #555; }
+  @keyframes shake { 0%,100%{transform:rotate(0) scale(1);} 20%{transform:rotate(-10deg) scale(1.1);} 50%{transform:rotate(8deg) scale(.95);} 80%{transform:rotate(-4deg) scale(1.04);} }
+  .result { border: 1px solid #ddd; border-radius: 8px; padding: 16px; display: none; }
+  .result-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .hits-num { font-size: 36px; font-weight: 600; }
+  .hits-label { font-size: 12px; color: #666; }
+  .stats { display: flex; gap: 10px; }
+  .stat { flex: 1; background: #f7f7f7; border-radius: 6px; padding: 10px 12px; text-align: center; }
+  .stat-l { font-size: 11px; color: #888; margin-bottom: 4px; }
+  .stat-v { font-size: 18px; font-weight: 600; }
+  .stat.highlight { background: #111; } .stat.highlight .stat-l { color: #aaa; } .stat.highlight .stat-v { color: #fff; }
+  .badge { padding: 4px 12px; border-radius: 5px; font-size: 13px; font-weight: 500; }
+  .badge-hit { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
+  .badge-zero { background: #f5f5f5; color: #555; border: 1px solid #ccc; }
+  .badge-glitch { background: #fff8e1; color: #e65100; border: 1px solid #ffe082; }
+  .badge-crit { background: #ffebee; color: #7f0000; border: 1px solid #ef9a9a; }
+
+  /* Charakter-Auswahl */
+  .char-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .char-tab { padding: 8px 12px; border: 1px solid #ccc; border-radius: 20px; background: #fff; font-size: 13px; font-weight: 500; cursor: pointer; color: #444; }
+  .char-tab:hover { background: #f0f0f0; }
+  .char-tab.active { background: #111; border-color: #111; color: #fff; }
+  .char-tab.add { border-style: dashed; color: #666; }
+
+  .sheet-head { display: flex; gap: 8px; margin-bottom: 8px; }
+  .sheet-head .name { flex: 2; } .sheet-head .meta { flex: 1.5; } .sheet-head .karma { flex: .8; }
+  .sheet-head input { width: 100%; min-width: 0; padding: 10px; border: 1px solid #ccc; border-radius: 7px; font-size: 14px; color: #111; }
+  .sheet-head .name input { font-weight: 600; font-size: 15px; }
+  .del-char { border: 1px solid #ddd; border-radius: 7px; background: #fff; color: #aaa; cursor: pointer; font-size: 12px; padding: 0 12px; flex-shrink: 0; }
+  .del-char:hover { background: #ffebee; border-color: #c62828; color: #c62828; }
+  .spec-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+  .spec { display: flex; align-items: center; gap: 6px; background: #fff7ec; border: 1px solid #f3e0c5; border-radius: 7px; padding: 6px 8px; }
+  .spec label { font-size: 10px; font-weight: 600; color: #b06a00; flex-shrink: 0; cursor: help; }
+  .spec input { width: 100%; min-width: 0; padding: 6px 2px; border: 1px solid #e3cba6; border-radius: 5px; text-align: center; font-size: 14px; font-weight: 600; color: #111; background: #fff; }
+  .spec.readonly { background: #eef4fb; border-color: #cfe0f3; } .spec.readonly label { color: #1565c0; } .spec-v { width: 100%; text-align: center; font-size: 15px; font-weight: 700; color: #111; }
+  button.spec-v { cursor: pointer; border: 1px solid #cfe0f3; background: #fff; border-radius: 5px; padding: 5px 2px; font-family: inherit; } button.spec-v:hover { background: #111; color: #fff; border-color: #111; }
+  .move-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+
+  .sec { border: 1px solid #e2e2e2; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  .sec-label { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: #999; font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .sec-label .opt { text-transform: none; letter-spacing: 0; color: #bbb; font-weight: 400; }
+
+  .mon-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .mon-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .mon-head .t { font-size: 13px; font-weight: 600; } .mon-head .c { font-size: 11px; color: #888; }
+  .boxes { display: flex; flex-wrap: wrap; gap: 4px; }
+  .box { width: 24px; height: 24px; border: 1px solid #bbb; border-radius: 4px; cursor: pointer; background: #fff; font-size: 10px; color: #bbb; display: flex; align-items: center; justify-content: center; }
+  .box:hover { border-color: #777; }
+  .box.pen { border-bottom: 3px solid #f0a000; }
+  .box.fill { background: #c62828; border-color: #c62828; color: #fff; }
+  .box.over { border-style: dashed; } .box.fill.over { background: #7f0000; border-color: #7f0000; }
+  .mon-note { font-size: 10px; color: #aaa; margin-top: 5px; }
+  .wound { margin-top: 14px; font-size: 13px; font-weight: 600; text-align: center; padding: 8px; border-radius: 7px; }
+  .wound.none { color: #2e7d32; background: #e8f5e9; } .wound.hit { color: #c62828; background: #ffebee; }
+  .ko-status { margin-top: 8px; font-size: 13px; font-weight: 600; text-align: center; padding: 8px; border-radius: 7px; background: #7f0000; color: #fff; }
+  .action-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 14px; padding: 10px 12px; border: 1px solid #e2e2e2; border-radius: 9px; background: #fafafa; }
+  .action-bar .ab-l { font-size: 12px; color: #666; font-weight: 600; }
+  .edge-pill { font-size: 14px; font-weight: 700; color: #b06a00; }
+  .ab-btn { padding: 7px 11px; border: 1px solid #ccc; border-radius: 7px; background: #fff; font-size: 12px; font-weight: 500; cursor: pointer; color: #444; }
+  .ab-btn:hover { background: #f0f0f0; } .ab-btn.armed { background: #b06a00; border-color: #b06a00; color: #fff; }
+  .ab-sit { width: 56px; padding: 6px 4px; border: 1px solid #ccc; border-radius: 6px; text-align: center; font-size: 13px; color: #111; }
+  .heal-bar { display: flex; gap: 6px; margin-top: 10px; }
+  .heal-btn { flex: 1; padding: 7px; border: 1px solid #ccc; border-radius: 6px; background: #fff; font-size: 12px; font-weight: 500; cursor: pointer; color: #2e7d32; } .heal-btn:hover { background: #e8f5e9; border-color: #66bb6a; }
+  .sc-btn { width: 100%; margin-top: 10px; padding: 8px; border: 1px solid #b06a00; border-radius: 7px; background: #fff; color: #b06a00; font-size: 12px; font-weight: 600; cursor: pointer; } .sc-btn:hover { background: #fff7ec; } .sc-btn:disabled { opacity: .5; cursor: default; }
+  .notes-area { width: 100%; min-height: 70px; padding: 10px; border: 1px solid #ccc; border-radius: 7px; font-size: 13px; font-family: inherit; color: #111; resize: vertical; }
+  .ord-delay { width: 26px; height: 24px; border: 1px solid #ddd; border-radius: 5px; background: #fff; color: #888; cursor: pointer; font-size: 12px; flex-shrink: 0; } .ord-delay:hover { background: #fff8e1; border-color: #f0a000; color: #b06a00; }
+
+  .wd-inputs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 8px; }
+  .wd-item { display: flex; flex-direction: column; gap: 4px; text-align: center; background: #f7f7f7; border-radius: 7px; padding: 8px 6px; }
+  .wd-item label { font-size: 11px; color: #666; font-weight: 500; cursor: help; }
+  .wd-item input, .wd-item select { width: 100%; padding: 6px 2px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 14px; font-weight: 600; color: #111; background: #fff; }
+  .wd-verdict { font-size: 13px; font-weight: 600; text-align: center; padding: 7px; border-radius: 6px; margin-bottom: 8px; }
+  .wd-verdict.koerper { background: #ffebee; color: #c62828; } .wd-verdict.geist { background: #fff8e1; color: #e65100; } .wd-verdict.none { display: none; }
+  .wd-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .wd-roll { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #111; color: #fff; border-radius: 7px; padding: 8px 12px; cursor: pointer; }
+  .wd-roll:hover { background: #333; } .wd-roll .wd-l { font-size: 12px; } .wd-roll .wd-v { font-size: 16px; font-weight: 600; } .wd-roll .wd-go { font-size: 13px; opacity: .6; }
+  .soak-out { margin-top: 12px; } .soak-line { font-size: 13px; text-align: center; margin-bottom: 8px; } .soak-line.ok { color: #2e7d32; font-weight: 600; }
+  .apply-btn { width: 100%; padding: 9px; border: 1px solid #111; border-radius: 7px; background: #111; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .apply-btn:hover { background: #333; } .apply-btn:disabled { background: #e8f5e9; color: #1b5e20; border-color: #a5d6a7; cursor: default; }
+
+  .ini-line { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
+  .ini-line:last-child { border-bottom: none; }
+  .mdot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .ini-line .k { font-size: 13px; flex: 1; } .ini-line .f { font-size: 14px; font-weight: 600; width: 96px; text-align: right; } .ini-line .f small { color: #aaa; font-weight: 400; }
+  .ini-line .bonus { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #999; } .ini-line .bonus input { width: 38px; padding: 5px 2px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 12px; }
+
+  .derived-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .dstat { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; background: #f7f7f7; border-radius: 6px; padding: 8px 10px; }
+  .dstat .l { font-size: 12px; color: #666; } .dstat .v { font-size: 15px; font-weight: 600; white-space: nowrap; }
+
+  .attr-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .attr { background: #f7f7f7; border-radius: 7px; padding: 8px; text-align: center; }
+  .attr label { display: block; font-size: 10px; font-weight: 600; color: #888; margin-bottom: 4px; cursor: help; }
+  .attr input { width: 100%; padding: 7px 2px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 16px; font-weight: 600; color: #111; background: #fff; }
+  .attr-eff { font-size: 10px; color: #1565c0; font-weight: 600; margin-top: 3px; min-height: 12px; }
+  .deck-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .deck-grid .attr { background: #eef4fb; } .deck-grid .attr label { color: #1565c0; }
+
+  .mod-row { display: grid; grid-template-columns: 1fr 150px 56px 28px; gap: 8px; align-items: center; margin-bottom: 7px; }
+  .mod-row input, .mod-row select { padding: 8px 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; min-width: 0; color: #111; background: #fff; } .mod-row .mod-val { text-align: center; }
+  .mod-del, .xdel { width: 28px; height: 32px; border: 1px solid #ddd; border-radius: 6px; background: #fff; color: #aaa; cursor: pointer; font-size: 15px; flex-shrink: 0; }
+  .mod-del:hover, .xdel:hover { background: #ffebee; border-color: #c62828; color: #c62828; }
+
+  .tbl-scroll { overflow-x: auto; padding-bottom: 2px; }
+  .wp-row { display: flex; gap: 6px; align-items: center; margin-bottom: 7px; min-width: 600px; }
+  .wp-row input { padding: 7px 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 12px; min-width: 0; color: #111; background: #fff; }
+  .col-name { flex: 1; min-width: 130px; } .col-xs { width: 44px; text-align: center; flex-shrink: 0; } .col-s { width: 60px; text-align: center; flex-shrink: 0; } .col-m { width: 96px; flex-shrink: 0; }
+  .roll-btn { width: 34px; height: 32px; flex-shrink: 0; border: 1px solid #111; border-radius: 6px; background: #111; color: #fff; cursor: pointer; font-size: 14px; } .roll-btn:hover { background: #333; }
+
+  .sk-head, .sk-row { display: grid; grid-template-columns: 1fr 64px 36px 44px 92px; gap: 8px; align-items: center; }
+  .sk-lim { text-align: center; font-size: 13px; font-weight: 600; color: #666; }
+  .sk-head { font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: #aaa; margin-bottom: 6px; padding: 0 2px; }
+  .sk-row { margin-bottom: 7px; }
+  .sk-row input.sk-name { padding: 8px 9px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; min-width: 0; color: #111; }
+  .sk-attr { padding: 8px 4px; border: 1px solid #ccc; border-radius: 6px; font-size: 12px; background: #fff; color: #111; }
+  .sk-rating { padding: 8px 2px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; text-align: center; color: #111; }
+  .sk-roll { display: flex; align-items: center; gap: 6px; }
+  .sk-pool { flex: 1; text-align: center; font-size: 13px; font-weight: 600; color: #111; background: #f3f3f3; border-radius: 6px; padding: 8px 0; cursor: pointer; } .sk-pool:hover { background: #111; color: #fff; } .sk-pool small { font-weight: 400; color: #aaa; } .sk-pool:hover small { color: #ccc; }
+  .sk-del { width: 26px; height: 32px; border: 1px solid #ddd; border-radius: 6px; background: #fff; color: #aaa; cursor: pointer; font-size: 15px; flex-shrink: 0; } .sk-del:hover { background: #ffebee; border-color: #c62828; color: #c62828; }
+  .add-btn { width: 100%; padding: 9px; border: 1px dashed #bbb; border-radius: 8px; background: #fff; color: #555; font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 6px; } .add-btn:hover { background: #f5f5f5; border-color: #888; }
+
+  .roll-result { border: 1px solid #ddd; border-radius: 8px; padding: 14px; margin-top: 14px; display: none; }
+  .rr-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .rr-title { font-size: 13px; font-weight: 600; } .rr-title small { color: #888; font-weight: 400; }
+  .rr-dice { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .rr-stats { display: flex; gap: 8px; }
+  .rr-stat { flex: 1; background: #f7f7f7; border-radius: 6px; padding: 8px; text-align: center; } .rr-stat .l { font-size: 10px; color: #888; margin-bottom: 3px; } .rr-stat .v { font-size: 16px; font-weight: 600; }
+  .rr-stat.hl { background: #111; } .rr-stat.hl .l { color: #aaa; } .rr-stat.hl .v { color: #fff; }
+
+  /* Initiative-Tab */
+  .ini-pc { border: 1px solid #e2e2e2; border-radius: 9px; padding: 10px 12px; margin-bottom: 8px; }
+  .ini-pc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+  .ini-pc-head .nm { font-size: 14px; font-weight: 600; flex: 1; } .ini-pc-head .pv { font-size: 12px; color: #666; }
+  .ini-pc.away { opacity: .5; }
+  .pres { font-size: 11px; color: #666; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; flex-shrink: 0; } .pres input { cursor: pointer; accent-color: #2e7d32; }
+  .imodes { display: flex; flex-wrap: wrap; gap: 5px; }
+  .imode { display: flex; align-items: center; gap: 5px; padding: 6px 9px; border: 1px solid #ccc; border-radius: 6px; background: #fff; font-size: 11px; font-weight: 500; color: #555; cursor: pointer; }
+  .imode.active { background: #111; border-color: #111; color: #fff; }
+  .nsc-row { display: flex; gap: 6px; align-items: center; margin-bottom: 7px; }
+  .nsc-row input { padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; min-width: 0; color: #111; }
+  .nsc-row .n-name { flex: 1; } .nsc-row .n-base { width: 60px; text-align: center; }
+  .ndice { display: flex; gap: 3px; } .ndb { width: 32px; height: 32px; border: 1px solid #ccc; border-radius: 5px; background: #fff; font-size: 10px; cursor: pointer; } .ndb.active { background: #111; border-color: #111; color: #fff; }
+  .add-btns { display: flex; gap: 8px; margin: 8px 0 14px; }
+  #iniRollBtn { width: 100%; padding: 12px; border: 1px solid #111; border-radius: 8px; background: #111; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; } #iniRollBtn:hover { background: #333; }
+  .round-bar { display: flex; justify-content: space-between; align-items: center; margin: 22px 0 6px; }
+  .round-num { font-size: 14px; font-weight: 600; }
+  .btn-newround { padding: 8px 12px; border: 1px solid #111; border-radius: 7px; background: #111; color: #fff; font-size: 13px; font-weight: 500; cursor: pointer; } .btn-newround:hover { background: #333; }
+  .order-hint { font-size: 11px; color: #aaa; margin-bottom: 12px; }
+  .phase { border: 1px solid #ddd; border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; }
+  .phase-label { font-size: 12px; font-weight: 600; margin: 2px 4px 6px; display: flex; justify-content: space-between; } .phase-sub { font-size: 11px; color: #999; font-weight: 400; }
+  .ord { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 6px; border: 1px solid transparent; }
+  .ord.current { background: #fff8e1; border-color: #ffca28; } .ord.done { opacity: .45; } .ord.done .ord-name .nm { text-decoration: line-through; }
+  .ord-check { width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; accent-color: #111; }
+  button.ord-name { border: none; background: none; padding: 0; font: inherit; cursor: pointer; color: #1565c0; } button.ord-name:hover .nm { text-decoration: underline; }
+  .die.reroll { box-shadow: 0 0 0 2px #b06a00; }
+  .ord-rank { width: 24px; height: 24px; border-radius: 50%; background: #f0f0f0; color: #555; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ord.current .ord-rank { background: #f57f17; color: #fff; } .ord.done .ord-rank { background: #111; color: #fff; }
+  .ord-name { font-size: 14px; flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; } .ord-name .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ord-score { font-size: 14px; font-weight: 600; flex-shrink: 0; }
+  .mode-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: #555; background: #f3f3f3; border-radius: 4px; padding: 1px 7px; }
+  .done-banner { text-align: center; font-size: 13px; color: #1b5e20; background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 8px; padding: 12px; margin-top: 4px; }
+  .ir-section-label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: #999; margin: 0 0 10px; font-weight: 600; }
+  .ip { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+  .ip-name { width: 150px; font-size: 13px; font-weight: 500; flex-shrink: 0; overflow: hidden; } .ip-name .nm { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ip-calc { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; font-size: 12px; color: #666; } .ip-score { margin-left: auto; font-size: 18px; font-weight: 600; flex-shrink: 0; }
+  .id { width: 28px; height: 28px; border: 1px solid #ccc; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 15px; background: #fafafa; } .id.rolling { animation: shake .5s ease-in-out; }
+  .proto-note { font-size: 11px; color: #aaa; margin: 16px 0 8px; text-align: center; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<h1>Blackrock: Shadowrun 2036</h1>
+<p class="subtitle">Würfler · Charaktere · Initiative</p>
+
+<div class="roster-bar">
+  <span class="save-status" id="saveStatus">Auto-Speicherung aktiv</span>
+  <span class="rb-actions">
+    <button class="mini-btn" id="exportBtn">⬇ Export</button>
+    <button class="mini-btn" id="importBtn">⬆ Import</button>
+    <button class="mini-btn" id="resetBtn">↺ Standard</button>
+  </span>
+  <input type="file" id="importFile" accept="application/json,.json" hidden>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="wuerfel">🎲 Würfler</button>
+  <button class="tab" data-tab="chars">👤 Charaktere</button>
+  <button class="tab" data-tab="ini">⚡ Initiative</button>
+</div>
+
+<!-- ===== WÜRFLER ===== -->
+<section class="panel active" id="panel-wuerfel">
+  <p class="subtitle">5–6 = Erfolg &nbsp;|&nbsp; 1 = Patzer-Würfel &nbsp;|&nbsp; ≥50% Einsen = Patzer &nbsp;|&nbsp; Patzer + 0 Erfolge = Kritischer Patzer</p>
+  <div class="dice-grid" id="diceGrid"></div>
+  <button id="rollBtn" onclick="roll()">Würfeln</button>
+  <div class="pool" id="pool"></div>
+  <div class="result" id="result">
+    <div class="result-top"><div><div class="hits-label">Erfolge</div><div class="hits-num" id="hitsNum">0</div></div><div class="badge" id="badge"></div></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-l">Würfel</div><div class="stat-v" id="sTotal">—</div></div>
+      <div class="stat"><div class="stat-l">Erfolge (5–6)</div><div class="stat-v" id="sHits" style="color:#2e7d32">—</div></div>
+      <div class="stat"><div class="stat-l">Einsen</div><div class="stat-v" id="sOnes" style="color:#c62828">—</div></div>
+      <div class="stat highlight"><div class="stat-l">Summe</div><div class="stat-v" id="sSum">—</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CHARAKTERE ===== -->
+<section class="panel" id="panel-chars">
+  <div class="char-tabs" id="charTabs"></div>
+
+  <div class="sheet-head">
+    <div class="name"><input id="c-name" placeholder="Name"></div>
+    <div class="meta"><input id="c-meta" placeholder="Metatyp / Rolle"></div>
+    <div class="karma"><input id="c-karma" placeholder="Karma"></div>
+    <button class="del-char" id="delChar" title="Charakter löschen">löschen</button>
+  </div>
+  <div class="spec-row" id="specRow"></div>
+
+  <div class="action-bar">
+    <span class="ab-l">Edge</span><span class="edge-pill" id="edgePill">0/0</span>
+    <button class="ab-btn" id="edgeArm">⚡ Push the Limit: aus</button>
+    <button class="ab-btn" id="edgeRefresh">🩹 auffrischen</button>
+    <span class="ab-l" style="margin-left:auto;">Situativ</span>
+    <input type="number" class="ab-sit" id="c-situativ" value="0" title="Situativer Modifikator auf aktive Proben (diese Runde)">
+  </div>
+
+  <div class="roll-result" id="defResult"></div>
+  <div class="move-bar" id="moveBar"></div>
+
+  <div class="sec">
+    <div class="sec-label">Zustandsmonitor</div>
+    <div class="mon-wrap">
+      <div><div class="mon-head"><span class="t">Körper</span><span class="c" id="monP-c"></span></div><div class="boxes" id="monP"></div><div class="mon-note" id="monP-n"></div></div>
+      <div><div class="mon-head"><span class="t">Geist</span><span class="c" id="monS-c"></span></div><div class="boxes" id="monS"></div><div class="mon-note">−1 je 3 Kästchen</div></div>
+    </div>
+    <div class="wound none" id="woundLine">Wundabzug: 0</div>
+    <div id="koStatus" class="ko-status" style="display:none;"></div>
+    <div class="heal-bar">
+      <button class="heal-btn" id="healP">🩹 Körper −1</button>
+      <button class="heal-btn" id="healS">🩹 Geist −1</button>
+      <button class="heal-btn" id="healAll">Alles heilen</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Widerstand &amp; Schaden <span class="opt">Schaden eintragen → Typ wird berechnet</span></div>
+    <div class="wd-inputs">
+      <div class="wd-item"><label title="Panzerung gesamt">Panzerung</label><input type="number" id="c-panzer" min="0" value="0"></div>
+      <div class="wd-item"><label title="Durchschlagskraft des Angriffs — negativ, z. B. −2">DK</label><input type="number" id="c-dk" value="0"></div>
+      <div class="wd-item"><label title="Eingehender Schadenswert (inkl. Nettoerfolge)">Schaden</label><input type="number" id="c-schaden" min="0" value="0"></div>
+      <div class="wd-item"><label title="Schadensart des Angriffs">Art</label><select id="c-schadenart"><option value="K">körp.</option><option value="S">geistig</option></select></div>
+      <div class="wd-item"><label title="Entzugswert des Zaubers (für Entzug widerstehen)">Entzug-DV</label><input type="number" id="c-drainval" min="0" value="0"></div>
+    </div>
+    <div id="wd-verdict" class="wd-verdict none"></div>
+    <div class="wd-grid">
+      <div class="wd-roll" id="soakRoll"><span class="wd-l">Schadenswid. <small style="opacity:.6">KON+Pnz−DK</small></span><span class="wd-v" id="wd-soak">0</span><span class="wd-go">⌖</span></div>
+      <div class="wd-roll" id="drainRoll"><span class="wd-l">Entzug <small style="opacity:.6">WIL+LOG</small></span><span class="wd-v" id="wd-drain">0</span><span class="wd-go">⌖</span></div>
+    </div>
+    <div class="roll-result" id="widerstandResult"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Waffen <span class="opt">⌖ Angriff würfeln (Grenzwert = Genauigkeit, −Wunde)</span></div>
+    <div class="tbl-scroll"><div id="weaponRows"></div></div>
+    <button class="add-btn" id="addWeapon">+ Waffe</button>
+    <div class="roll-result" id="waffenResult"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Zauber <span class="opt">⌖ zaubern (−Wunde) · Entzug separat</span></div>
+    <div class="tbl-scroll"><div id="spellRows"></div></div>
+    <button class="add-btn" id="addSpell">+ Zauber</button>
+    <div class="roll-result" id="zauberResult"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Initiative</div>
+    <div id="iniBlock"></div>
+    <div class="mon-note" id="ini-note"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Grenzwerte &amp; abgeleitete Pools</div>
+    <div class="derived-grid" id="derivedGrid"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Fertigkeiten — antippen zum Würfeln</div>
+    <div class="sk-head"><span>Fertigkeit</span><span>Attribut</span><span>Stufe</span><span>Grenzw.</span><span>Pool</span></div>
+    <div id="skillRows"></div>
+    <button class="add-btn" id="addSkill">+ Fertigkeit</button>
+    <div class="roll-result" id="rollResult"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Attribute</div>
+    <div class="attr-grid" id="attrGrid"></div>
+    <div class="spec-row" id="specRow2" style="margin-top:8px;"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Deck / Matrix <span class="opt">DV speist VR-Initiative</span></div>
+    <div class="deck-grid" id="deckGrid"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Kontakte</div>
+    <div class="tbl-scroll"><div id="contactRows"></div></div>
+    <button class="add-btn" id="addContact">+ Kontakt</button>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Ausrüstung / Cyberware</div>
+    <div class="tbl-scroll"><div id="gearRows"></div></div>
+    <button class="add-btn" id="addGear">+ Eintrag</button>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Notizen</div>
+    <textarea class="notes-area" id="c-notes" placeholder="Hintergrund, Vor-/Nachteile, Sonstiges …"></textarea>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Boni / Mali <span class="opt">Vor-/Nachteile, Gear — auch auf Attribute</span></div>
+    <div id="modRows"></div>
+    <button class="add-btn" id="addMod">+ Bonus / Malus</button>
+  </div>
+</section>
+
+<!-- ===== INITIATIVE ===== -->
+<section class="panel" id="panel-ini">
+  <p class="subtitle">Zieht REA/INT/DV automatisch aus den Bögen. Aktiven Modus pro Figur antippen, dann würfeln. Wunde senkt den Score. Akteure zum Abhaken antippen.</p>
+  <div id="iniRoster"></div>
+  <div class="add-btns"><button class="add-btn" id="addNsc" style="margin-top:0;">+ NSC</button></div>
+  <button id="iniRollBtn">Initiative würfeln</button>
+  <div class="roll-result" id="iniResult" style="display:none;"></div>
+</section>
+
+<script>
+  const faces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+  const rand6 = () => Math.floor(Math.random() * 6) + 1;
+  const MAX_DICE = 5, ceil = Math.ceil;
+  const intVal = el => parseInt(el.value, 10) || 0;
+  const numVal = el => { const n = parseFloat((el.value || '').replace(',', '.')); return isNaN(n) ? 0 : n; };
+  const $ = id => document.getElementById(id);
+  const STORAGE_KEY = 'blackrock-sr2036-v3';
+
+  const ATTRS = [
+    { k:'kon', l:'KON', t:'Konstitution', grp:'p' }, { k:'ges', l:'GES', t:'Geschicklichkeit', grp:'p' },
+    { k:'rea', l:'REA', t:'Reaktion', grp:'p' }, { k:'sta', l:'STÄ', t:'Stärke', grp:'p' },
+    { k:'wil', l:'WIL', t:'Willenskraft', grp:'m' }, { k:'log', l:'LOG', t:'Logik', grp:'m' },
+    { k:'int', l:'INT', t:'Intuition', grp:'m' }, { k:'cha', l:'CHA', t:'Charisma', grp:'s' }
+  ];
+  const SPECIALS = [
+    { k:'edge', l:'Edge', t:'Edge / Kanten', def:3 }, { k:'aktedge', l:'Akt.', t:'Aktuelles Edge', def:3 },
+    { k:'essenz', l:'Essenz', t:'Essenz', def:6, step:0.1 }, { k:'magie', l:'Magie', t:'Magie', def:0 }
+  ];
+  const DECK = [ { k:'dv', l:'DV', t:'Datenverarbeitung (VR-Initiative)' }, { k:'fw', l:'FW', t:'Firewall' }, { k:'ang', l:'Angr.', t:'Angriff' }, { k:'schl', l:'Schl.', t:'Schleicher' } ];
+  const SKILL_ATTRS = ATTRS.concat([{ k:'mag', l:'MAG', t:'Magie', grp:'m' }]);
+  const INI = [
+    { key:'Kampf & AR', color:'#c62828', baseDice:1, tgt:'iniKampf', dtgt:'iniKampfD', base:a => a.rea + a.int },
+    { key:'Astral', color:'#7b1fa2', baseDice:2, tgt:'iniAstral', base:a => a.int * 2 },
+    { key:'VR kalt', color:'#1565c0', baseDice:3, tgt:'iniVRk', base:a => a.dv + a.int },
+    { key:'VR heiß', color:'#e65100', baseDice:4, tgt:'iniVRh', base:a => a.dv + a.int }
+  ];
+  const MODE_COLOR = Object.fromEntries(INI.map(m => [m.key, m.color]));
+  const TARGETS = [
+    { k:'global', l:'Alle aktiven Proben' },
+    { k:'attr-kon', l:'KON (Attribut)' }, { k:'attr-ges', l:'GES (Attribut)' }, { k:'attr-rea', l:'REA (Attribut)' }, { k:'attr-sta', l:'STÄ (Attribut)' }, { k:'attr-wil', l:'WIL (Attribut)' }, { k:'attr-log', l:'LOG (Attribut)' }, { k:'attr-int', l:'INT (Attribut)' }, { k:'attr-cha', l:'CHA (Attribut)' }, { k:'attr-mag', l:'Magie (Attribut)' },
+    { k:'limP', l:'Körperl. Limit' }, { k:'limM', l:'Geistiges Limit' }, { k:'limS', l:'Soziales Limit' }, { k:'limA', l:'Astrales Limit' },
+    { k:'monP', l:'Körper-Max' }, { k:'monS', l:'Geist-Max' },
+    { k:'def', l:'Verteidigung' }, { k:'comp', l:'Selbstbeherrschung' }, { k:'judge', l:'Menschenkenntnis' }, { k:'mem', l:'Erinnern' }, { k:'lift', l:'Heben/Tragen' }, { k:'entzug', l:'Entzug' },
+    { k:'iniKampf', l:'Ini Kampf (Basis)' }, { k:'iniKampfD', l:'Ini Kampf (Würfel)' }, { k:'iniAstral', l:'Ini Astral (Basis)' }, { k:'iniVRk', l:'Ini VR kalt (Basis)' }, { k:'iniVRh', l:'Ini VR heiß (Basis)' }
+  ];
+
+  /* ===== Würfler ===== */
+  let selected = 6;
+  for (let i = 1; i <= 20; i++) { const b = document.createElement('button'); b.className = 'db' + (i === 6 ? ' active' : ''); b.textContent = i + 'W6'; b.onclick = () => { selected = i; document.querySelectorAll('.db').forEach(x => x.classList.remove('active')); b.classList.add('active'); }; $('diceGrid').appendChild(b); }
+  function roll() {
+    const pool = $('pool'); $('result').style.display = 'none'; pool.innerHTML = '';
+    const dice = [];
+    for (let i = 0; i < selected; i++) { const d = document.createElement('div'); d.className = 'die rolling'; d.textContent = faces[Math.floor(Math.random() * 6)]; pool.appendChild(d); dice.push(d); }
+    setTimeout(() => {
+      const vals = [];
+      dice.forEach(d => { const v = rand6(); vals.push(v); d.textContent = faces[v - 1]; d.classList.remove('rolling'); d.classList.add(v >= 5 ? 'hit' : v === 1 ? 'one' : 'miss'); });
+      const hits = vals.filter(v => v >= 5).length, ones = vals.filter(v => v === 1).length, sum = vals.reduce((a, b) => a + b, 0);
+      const glitch = ones >= Math.ceil(selected / 2), crit = glitch && hits === 0;
+      $('hitsNum').textContent = hits; $('sTotal').textContent = selected; $('sHits').textContent = hits; $('sOnes').textContent = ones; $('sSum').textContent = sum;
+      const badge = $('badge');
+      if (crit) { badge.className = 'badge badge-crit'; badge.textContent = '⚠ Kritischer Patzer!'; }
+      else if (glitch) { badge.className = 'badge badge-glitch'; badge.textContent = '⚠ Patzer'; }
+      else if (hits === 0) { badge.className = 'badge badge-zero'; badge.textContent = 'Kein Erfolg'; }
+      else { badge.className = 'badge badge-hit'; badge.textContent = hits === 1 ? '1 Erfolg ✓' : hits + ' Erfolge ✓'; }
+      $('result').style.display = 'block';
+    }, 520);
+  }
+
+  /* ===== Sheet-Eingabefelder ===== */
+  ATTRS.forEach(a => { const w = document.createElement('div'); w.className = 'attr'; w.innerHTML = '<label title="' + a.t + '">' + a.l + '</label>'; const i = document.createElement('input'); i.type = 'number'; i.min = '0'; i.value = 3; i.id = 'a-' + a.k; i.title = a.t; w.appendChild(i); const e = document.createElement('div'); e.className = 'attr-eff'; e.id = 'ae-' + a.k; w.appendChild(e); $('attrGrid').appendChild(w); });
+  SPECIALS.forEach(s => { const tgt = (s.k === 'essenz' || s.k === 'magie') ? 'specRow2' : 'specRow'; const w = document.createElement('div'); w.className = 'spec'; w.innerHTML = '<label title="' + s.t + '">' + s.l + '</label>'; const i = document.createElement('input'); i.type = 'number'; i.min = '0'; if (s.step) i.step = String(s.step); i.value = s.def; i.id = 's-' + s.k; i.title = s.t; w.appendChild(i); $(tgt).appendChild(w); });
+  [['kw-defp', 'Ausw.', 'Ausweichen passiv (REA+INT) — würfeln'], ['kw-defa', 'Ausw.+', 'Ausweichen aktiv (+Akrobatik) — würfeln']].forEach(p => { const w = document.createElement('div'); w.className = 'spec readonly'; const lab = document.createElement('label'); lab.title = p[2]; lab.textContent = p[1]; const btn = document.createElement('button'); btn.className = 'spec-v'; btn.id = p[0]; btn.textContent = '0'; btn.title = 'Würfeln'; w.append(lab, btn); $('specRow').appendChild(w); });
+  $('kw-defp').onclick = () => { const a = A(); const pool = Math.max(0, a.rea + a.int + modSum('def') + activeAdjust()); doRoll('Ausweichen', pool, null, $('defResult'), adjNote(), consumeEdgeIfArmed()); };
+  $('kw-defa').onclick = () => { const a = A(); const pool = Math.max(0, a.rea + a.int + modSum('def') + akrobatikRating() + activeAdjust()); doRoll('Ausweichen aktiv', pool, null, $('defResult'), adjNote(), consumeEdgeIfArmed()); };
+  DECK.forEach(dk => { const w = document.createElement('div'); w.className = 'attr'; w.innerHTML = '<label title="' + dk.t + '">' + dk.l + '</label>'; const i = document.createElement('input'); i.type = 'number'; i.min = '0'; i.value = 0; i.id = 'd-' + dk.k; i.title = dk.t; w.appendChild(i); $('deckGrid').appendChild(w); });
+
+  let dmgP = 0, dmgS = 0, iniBonus = {};
+  function modSum(t) { let s = 0; document.querySelectorAll('#modRows .mod-row').forEach(r => { if (r.querySelector('.mod-target').value === t) s += (parseInt(r.querySelector('.mod-val').value, 10) || 0); }); return s; }
+  const A = () => { const o = {}; ATTRS.forEach(a => o[a.k] = intVal($('a-' + a.k)) + modSum('attr-' + a.k)); o.edge = intVal($('s-edge')); o.aktedge = intVal($('s-aktedge')); o.essenz = numVal($('s-essenz')); o.magie = intVal($('s-magie')) + modSum('attr-mag'); DECK.forEach(dk => o[dk.k] = intVal($('d-' + dk.k))); return o; };
+  function woundMod() { return Math.floor(dmgP / 3) + Math.floor(dmgS / 3); }
+  function situativ() { const el = $('c-situativ'); return el ? intVal(el) : 0; }
+  function activeAdjust() { return modSum('global') + situativ() - woundMod(); }
+  let edgeArmed = false;
+  function updateEdgeUI() { const now = intVal($('s-aktedge')), max = intVal($('s-edge')); const p = $('edgePill'); if (p) p.textContent = now + '/' + max; const ab = $('edgeArm'); if (ab) { if (edgeArmed && now > 0) { ab.classList.add('armed'); ab.textContent = '⚡ Push the Limit: AN'; } else { ab.classList.remove('armed'); ab.textContent = '⚡ Push the Limit: aus'; } } if (now <= 0) edgeArmed = false; }
+  function consumeEdgeIfArmed() { if (edgeArmed && intVal($('s-aktedge')) > 0) { $('s-aktedge').value = intVal($('s-aktedge')) - 1; edgeArmed = false; onSheetInput(); return true; } return false; }
+
+  /* ===== Boni/Mali ===== */
+  function makeModRow(m) { m = m || {}; const row = document.createElement('div'); row.className = 'mod-row'; const name = document.createElement('input'); name.className = 'mod-name'; name.placeholder = 'Bezeichnung'; name.value = m.name || ''; const sel = document.createElement('select'); sel.className = 'mod-target'; TARGETS.forEach(t => { const o = document.createElement('option'); o.value = t.k; o.textContent = t.l; if ((m.target || 'global') === t.k) o.selected = true; sel.appendChild(o); }); const val = document.createElement('input'); val.className = 'mod-val'; val.type = 'number'; val.value = m.val != null ? m.val : 1; const del = document.createElement('button'); del.className = 'mod-del'; del.textContent = '×'; del.onclick = () => { row.remove(); onSheetInput(); }; row.append(name, sel, val, del); return row; }
+
+  /* ===== Fertigkeiten ===== */
+  function attrForSkill(k) { const a = A(); return k === 'mag' ? a.magie : (a[k] || 0); }
+  let lastCalc = { limP:0, limM:0, limS:0, entzug:0 };
+  function limitForSkill(k) { const grp = (SKILL_ATTRS.find(x => x.k === k) || {}).grp; if (grp === 'p') return lastCalc.limP; if (grp === 's') return lastCalc.limS; return lastCalc.limM; }
+  function makeSkillRow(s) { s = s || {}; const row = document.createElement('div'); row.className = 'sk-row'; const name = document.createElement('input'); name.className = 'sk-name'; name.value = s.name || 'Neue Fertigkeit'; const sel = document.createElement('select'); sel.className = 'sk-attr'; SKILL_ATTRS.forEach(a => { const o = document.createElement('option'); o.value = a.k; o.textContent = a.l; if ((s.attr || 'ges') === a.k) o.selected = true; sel.appendChild(o); }); const rating = document.createElement('input'); rating.className = 'sk-rating'; rating.type = 'number'; rating.min = '0'; rating.value = s.rating != null ? s.rating : 4; const rollWrap = document.createElement('div'); rollWrap.className = 'sk-roll'; const pool = document.createElement('div'); pool.className = 'sk-pool'; pool.title = 'Würfeln'; pool.onclick = () => rollSkill(row); const del = document.createElement('button'); del.className = 'sk-del'; del.textContent = '×'; del.onclick = () => { row.remove(); onSheetInput(); }; rollWrap.append(pool, del); const lim = document.createElement('div'); lim.className = 'sk-lim'; lim.title = 'Grenzwert'; row.append(name, sel, rating, lim, rollWrap); return row; }
+  function skillData(row) { const k = row.querySelector('.sk-attr').value; const rating = intVal(row.querySelector('.sk-rating')); const adj = activeAdjust(); const pool = Math.max(0, rating + attrForSkill(k) + adj); return { name: row.querySelector('.sk-name').value, pool, adj, limit: limitForSkill(k) }; }
+  function updateSkillPool(row) { const d = skillData(row); row.querySelector('.sk-pool').innerHTML = d.pool + (d.adj ? '<small> (' + (d.adj > 0 ? '+' + d.adj : d.adj) + ')</small>' : ''); const lc = row.querySelector('.sk-lim'); if (lc) lc.textContent = d.limit; }
+
+  /* ===== Waffen & Zauber ===== */
+  function smallInput(cls, val, ph, title) { const i = document.createElement('input'); i.className = cls; i.value = val != null ? val : ''; i.placeholder = ph || ''; if (title) i.title = title; return i; }
+  function makeWeaponRow(wp) { wp = wp || {}; const row = document.createElement('div'); row.className = 'wp-row'; const name = smallInput('wp-name col-name', wp.name, 'Waffe'); const pool = smallInput('wp-pool col-xs', wp.pool, 'Pool', 'Basis-Würfelpool'); pool.type = 'number'; pool.min = '0'; const gen = smallInput('wp-gen col-xs', wp.gen, 'Gen.', 'Genauigkeit'); const dmg = smallInput('wp-dmg col-s', wp.dmg, 'Schad.', 'Schaden'); const dk = smallInput('wp-dk col-xs', wp.dk, 'DK', 'Durchschlagskraft'); const rw = smallInput('wp-rw col-xs', wp.rw, 'RW', 'Reichweite'); const mod = smallInput('wp-mod col-s', wp.mod, 'Modus'); const seite = smallInput('wp-seite col-m', wp.seite, 'Muni/Seite'); const rb = document.createElement('button'); rb.className = 'roll-btn'; rb.textContent = '⌖'; rb.title = 'Angriff würfeln'; rb.onclick = () => { const lim = parseInt(gen.value, 10); const eff = Math.max(0, intVal(pool) + activeAdjust()); const edge = consumeEdgeIfArmed(); doRoll(name.value || 'Angriff', eff, isNaN(lim) ? null : lim, $('waffenResult'), adjNote(), edge); }; const del = document.createElement('button'); del.className = 'xdel'; del.textContent = '×'; del.onclick = () => { row.remove(); onSheetInput(); }; row.append(name, pool, gen, dmg, dk, rw, mod, seite, rb, del); return row; }
+  function makeSpellRow(sp) { sp = sp || {}; const row = document.createElement('div'); row.className = 'wp-row'; const name = smallInput('zb-name col-name', sp.name, 'Zauber'); const pool = smallInput('zb-pool col-xs', sp.pool, 'Pool', 'Basis-Würfelpool'); pool.type = 'number'; pool.min = '0'; const typ = smallInput('zb-typ col-s', sp.typ, 'Typ'); const rw = smallInput('zb-rw col-xs', sp.rw, 'RW'); const dmg = smallInput('zb-dmg col-xs', sp.dmg, 'Schad.'); const dauer = smallInput('zb-dauer col-xs', sp.dauer, 'Dauer'); const entzug = smallInput('zb-entzug col-s', sp.entzug, 'Entzug'); const art = smallInput('zb-art col-xs', sp.art, 'Art'); const seite = smallInput('zb-seite col-xs', sp.seite, 'Seite'); const rb = document.createElement('button'); rb.className = 'roll-btn'; rb.textContent = '⌖'; rb.title = 'Zauber würfeln'; rb.onclick = () => { const eff = Math.max(0, intVal(pool) + activeAdjust()); const edge = consumeEdgeIfArmed(); doRoll(name.value || 'Zauber', eff, null, $('zauberResult'), adjNote(), edge); }; const del = document.createElement('button'); del.className = 'xdel'; del.textContent = '×'; del.onclick = () => { row.remove(); onSheetInput(); }; row.append(name, pool, typ, rw, dmg, dauer, entzug, art, seite, rb, del); return row; }
+  function adjNote() { const wm = woundMod(), gm = modSum('global'), si = situativ(); const parts = []; if (wm) parts.push('Wunde −' + wm); if (gm) parts.push('Mod ' + (gm > 0 ? '+' + gm : gm)); if (si) parts.push('Situativ ' + (si > 0 ? '+' + si : si)); return parts.join(' · '); }
+
+  /* ===== Kontakte & Ausrüstung ===== */
+  function makeContactRow(c) { c = c || {}; const row = document.createElement('div'); row.className = 'wp-row'; const name = smallInput('ct-name col-name', c.name, 'Name / Kontakt'); const ort = smallInput('ct-ort col-m', c.ort, 'Ort'); const arch = smallInput('ct-arch col-m', c.arch, 'Archetyp'); const inf = smallInput('ct-inf col-xs', c.inf, 'Einf.', 'Einfluss'); inf.type = 'number'; const loy = smallInput('ct-loy col-xs', c.loy, 'Loy.', 'Loyalität'); loy.type = 'number'; const del = document.createElement('button'); del.className = 'xdel'; del.textContent = '×'; del.onclick = () => { row.remove(); onSheetInput(); }; row.append(name, ort, arch, inf, loy, del); return row; }
+  function makeGearRow(g) { g = g || {}; const row = document.createElement('div'); row.className = 'wp-row'; const name = smallInput('gr-name col-name', g.name, 'Gegenstand / Implantat'); const typ = smallInput('gr-typ col-m', g.typ, 'Typ'); const stufe = smallInput('gr-stufe col-xs', g.stufe, 'Stufe'); const ess = smallInput('gr-ess col-xs', g.ess, 'Essenz'); const notiz = smallInput('gr-notiz col-m', g.notiz, 'Notiz'); const del = document.createElement('button'); del.className = 'xdel'; del.textContent = '×'; del.onclick = () => { row.remove(); onSheetInput(); }; row.append(name, typ, stufe, ess, notiz, del); return row; }
+
+  /* ===== Initiative-Anzeige im Bogen ===== */
+  function buildIniBlock() { const c = $('iniBlock'); c.innerHTML = ''; INI.forEach(m => { const line = document.createElement('div'); line.className = 'ini-line'; line.innerHTML = '<span class="mdot" style="background:' + m.color + '"></span><span class="k">' + m.key + '</span><span class="bonus">+<input type="number" min="0" id="ib-' + m.tgt + '" value="' + (iniBonus[m.tgt] || 0) + '" title="Bonus-Würfel">W6</span><span class="f" id="if-' + m.tgt + '">—</span>'; c.appendChild(line); }); }
+
+  /* ===== Berechnung (aktiver Bogen) ===== */
+  function recalc() {
+    const a = A();
+    ATTRS.forEach(x => { const e = $('ae-' + x.k); if (e) { const base = intVal($('a-' + x.k)); e.textContent = a[x.k] !== base ? '→ ' + a[x.k] : ''; } });
+    const limP = ceil((a.sta * 2 + a.kon + a.rea) / 3) + modSum('limP');
+    const limM = ceil((a.log * 2 + a.int + a.wil) / 3) + modSum('limM');
+    const limS = ceil((a.cha * 2 + a.wil + a.essenz) / 3) + modSum('limS');
+    const limA = Math.max(limM, limS) + modSum('limA');
+    const entzug = a.wil + a.log + modSum('entzug');
+    lastCalc = { limP, limM, limS, limA, entzug };
+    const wm = woundMod();
+
+    INI.forEach(m => { const base = m.base(a) + modSum(m.tgt); const bel = $('ib-' + m.tgt); const bonus = bel ? intVal(bel) : (iniBonus[m.tgt] || 0); const dice = Math.min(MAX_DICE, m.baseDice + bonus + (m.dtgt ? modSum(m.dtgt) : 0)); const fe = $('if-' + m.tgt); if (fe) fe.innerHTML = base + ' <small>+ ' + dice + 'W6</small>'; });
+    $('ini-note').textContent = wm ? 'Bei Schaden: −' + wm + ' auf den Initiative-Score (wird im Initiative-Tab abgezogen).' : '';
+
+    const def = a.rea + a.int + modSum('def'), akro = akrobatikRating(), comp = a.wil + a.cha + modSum('comp'), judge = a.int + a.cha + modSum('judge'), mem = a.log + a.wil + modSum('mem'), lift = a.sta + a.kon + modSum('lift');
+    if ($('kw-defp')) $('kw-defp').textContent = def;
+    if ($('kw-defa')) $('kw-defa').textContent = def + akro;
+    if ($('moveBar')) $('moveBar').innerHTML = [['Gehen', a.ges * 2 + ' m'], ['Laufen', a.ges * 4 + ' m'], ['Schwimmen', Math.floor((a.ges + a.sta) / 2) + ' m'], ['Tragen', lift]].map(x => '<div class="dstat"><span class="l">' + x[0] + '</span><span class="v">' + x[1] + '</span></div>').join('');
+    const D = [ ['Körperl. Limit', limP], ['Geistiges Limit', limM], ['Soziales Limit', limS], ['Astrales Limit', limA], ['Selbstbeherrschung', comp], ['Menschenkenntnis', judge], ['Erinnern', mem], ['Entzug widerst.', entzug] ];
+    $('derivedGrid').innerHTML = D.map(d => '<div class="dstat"><span class="l">' + d[0] + '</span><span class="v">' + d[1] + '</span></div>').join('');
+
+    const maxP = 8 + ceil(a.kon / 2) + modSum('monP'), maxS = 8 + ceil(a.wil / 2) + modSum('monS'), overflow = a.kon;
+    dmgP = Math.min(dmgP, maxP + overflow); dmgS = Math.min(dmgS, maxS);
+    $('monP-c').textContent = 'Schaden ' + dmgP + ' / ' + maxP + (dmgP > maxP ? '  ⚠ Overflow ' + (dmgP - maxP) + '/' + overflow : '');
+    $('monS-c').textContent = 'Schaden ' + dmgS + ' / ' + maxS;
+    $('monP-n').textContent = '−1 je 3 · Overflow = KON ' + overflow + ' → TOD';
+    renderBoxes('monP', maxP, overflow, () => dmgP, v => dmgP = v, 'TOD'); renderBoxes('monS', maxS, 0, () => dmgS, v => dmgS = v, 'KO');
+    const wl = $('woundLine'); wl.textContent = 'Wundabzug: ' + (wm ? '−' + wm + '  (Fertigkeiten/Waffen/Zauber/Ini)' : '0'); wl.className = 'wound ' + (wm ? 'hit' : 'none');
+    const ks = $('koStatus'), st = [];
+    if (dmgS >= maxS) st.push('💤 Bewusstlos — geistiger Monitor voll');
+    if (dmgP >= maxP + overflow) st.push('☠ Tot — Überlauf voll');
+    else if (dmgP > maxP) st.push('⚠ Körperlicher Überlauf — Lebensgefahr');
+    if (st.length) { ks.style.display = ''; ks.textContent = st.join(' · '); } else { ks.style.display = 'none'; ks.textContent = ''; }
+
+    const modArmor = Math.max(0, intVal($('c-panzer')) + intVal($('c-dk')));
+    $('wd-soak').textContent = a.kon + modArmor; $('wd-drain').textContent = entzug;
+    const vEl = $('wd-verdict'), schaden = intVal($('c-schaden'));
+    if (schaden > 0) { const stun = ($('c-schadenart').value === 'S') || (schaden <= modArmor); vEl.textContent = 'Schaden ' + schaden + ' vs. Panzerung ' + modArmor + ' → ' + (stun ? 'geistig (Stun)' : 'körperlich'); vEl.className = 'wd-verdict ' + (stun ? 'geist' : 'koerper'); } else { vEl.className = 'wd-verdict none'; vEl.textContent = ''; }
+
+    document.querySelectorAll('#skillRows .sk-row').forEach(updateSkillPool);
+    updateEdgeUI();
+  }
+  function akrobatikRating() { let r = 0; document.querySelectorAll('#skillRows .sk-row').forEach(row => { const n = (row.querySelector('.sk-name').value || '').toLowerCase(); if (n.includes('akrobat') || n.includes('gymnast')) r = intVal(row.querySelector('.sk-rating')); }); return r; }
+  function renderBoxes(id, max, overflow, getD, setD, endLabel) { const cont = $(id); cont.innerHTML = ''; for (let i = 0; i < max + overflow; i++) { const b = document.createElement('div'); const isOver = i >= max, isPen = (i + 1) % 3 === 0 && !isOver; b.className = 'box' + (i < getD() ? ' fill' : '') + (isOver ? ' over' : '') + (isPen ? ' pen' : ''); b.textContent = (i === max + overflow - 1) ? endLabel : (i + 1); b.onclick = () => { const cur = getD(); setD(i < cur ? i : i + 1); onSheetInput(); }; cont.appendChild(b); } }
+
+  /* ===== Würfe ===== */
+  function explode(vals) { let s = vals.filter(v => v === 6).length, g = 0; while (s > 0 && g < 80) { g++; const ex = []; for (let i = 0; i < s; i++) ex.push(rand6()); vals.push(...ex); s = ex.filter(v => v === 6).length; } }
+  function statCells(lim) { return '<div class="rr-stat"><div class="l">Würfel</div><div class="v" data-cnt>…</div></div><div class="rr-stat"><div class="l">Erfolge</div><div class="v" data-hits style="color:#2e7d32">…</div></div><div class="rr-stat"><div class="l">Einsen</div><div class="v" data-ones style="color:#c62828">…</div></div>' + (lim == null ? '' : '<div class="rr-stat hl"><div class="l">Grenzwert</div><div class="v">' + lim + '</div></div>'); }
+  function revealAndCount(resEl, vals, lim) {
+    const dieEls = resEl.querySelectorAll('[data-dice] .die');
+    vals.forEach((v, i) => { const el = dieEls[i]; if (el) { el.textContent = faces[v - 1]; el.classList.remove('rolling', 'hit', 'one', 'miss'); el.classList.add(v >= 5 ? 'hit' : v === 1 ? 'one' : 'miss'); } });
+    const rawHits = vals.filter(v => v >= 5).length, hits = (lim == null) ? rawHits : Math.min(rawHits, lim), ones = vals.filter(v => v === 1).length;
+    const glitch = vals.length > 0 && ones >= Math.ceil(vals.length / 2), crit = glitch && hits === 0;
+    resEl.querySelector('[data-cnt]').textContent = vals.length;
+    resEl.querySelector('[data-hits]').textContent = hits + ((lim != null && rawHits > hits) ? ' *' : '');
+    resEl.querySelector('[data-ones]').textContent = ones;
+    const b = resEl.querySelector('[data-badge]');
+    if (crit) { b.className = 'badge badge-crit'; b.textContent = '⚠ Kritischer Patzer!'; }
+    else if (glitch) { b.className = 'badge badge-glitch'; b.textContent = '⚠ Patzer'; }
+    else if (hits === 0) { b.className = 'badge badge-zero'; b.textContent = 'Kein Erfolg'; }
+    else { b.className = 'badge badge-hit'; b.textContent = hits + (hits === 1 ? ' Erfolg ✓' : ' Erfolge ✓') + ((lim != null && rawHits > hits) ? ' (am Grenzwert)' : ''); }
+  }
+  function doRoll(name, pool, limit, resEl, subnote, edge) {
+    resEl.style.display = 'block';
+    let total = pool, lim = edge ? null : limit, sub = subnote || '';
+    if (edge) { total += intVal($('s-edge')); sub = (sub ? sub + ' · ' : '') + 'Push the Limit'; }
+    const vals = []; for (let i = 0; i < total; i++) vals.push(rand6());
+    if (edge) explode(vals);
+    const titleSmall = vals.length + 'W6' + (lim == null ? '' : ' · Grenzwert ' + lim) + (sub ? ' · ' + sub : '');
+    resEl.innerHTML = '<div class="rr-top"><div class="rr-title">' + escapeHtml(name || 'Wurf') + ' <small>' + titleSmall + '</small></div><div class="badge" data-badge>…</div></div>' +
+      '<div class="rr-dice" data-dice>' + (vals.length ? vals.map(() => '<span class="die sm rolling">' + faces[Math.floor(Math.random() * 6)] + '</span>').join('') : '<span style="font-size:12px;color:#999">Kein Würfel</span>') + '</div>' +
+      '<div class="rr-stats">' + statCells(lim) + '</div>' +
+      '<button class="sc-btn" data-sc style="display:none">🔁 Misserfolge neu würfeln (Edge −1)</button>';
+    setTimeout(() => {
+      revealAndCount(resEl, vals, lim);
+      const btn = resEl.querySelector('[data-sc]');
+      if (btn && intVal($('s-aktedge')) > 0 && vals.length) { btn.style.display = ''; btn.onclick = () => { if (intVal($('s-aktedge')) <= 0) return; $('s-aktedge').value = intVal($('s-aktedge')) - 1; const rr = []; for (let i = 0; i < vals.length; i++) if (vals[i] < 5) { vals[i] = rand6(); rr.push(i); } revealAndCount(resEl, vals, lim); const de = resEl.querySelectorAll('[data-dice] .die'); rr.forEach(i => { if (de[i]) de[i].classList.add('reroll'); }); btn.style.display = 'none'; onSheetInput(); }; }
+    }, 520);
+  }
+  function rollSkill(row) { const d = skillData(row); const edge = consumeEdgeIfArmed(); doRoll(d.name, d.pool, d.limit, $('rollResult'), adjNote(), edge); }
+  function rollSoak() {
+    const a = A(); const modArmor = Math.max(0, intVal($('c-panzer')) + intVal($('c-dk'))); const pool = a.kon + modArmor; const dv = intVal($('c-schaden')); const stun = ($('c-schadenart').value === 'S') || (dv <= modArmor); const res = $('widerstandResult'); res.style.display = 'block';
+    const diceHtml = Array.from({ length: pool }, () => '<span class="die sm rolling">' + faces[Math.floor(Math.random() * 6)] + '</span>').join('');
+    res.innerHTML = '<div class="rr-top"><div class="rr-title">Schadenswiderstand <small>' + pool + 'W6 · KON+Pnz−DK</small></div><div class="badge" data-badge>…</div></div><div class="rr-dice">' + (diceHtml || '<span style="font-size:12px;color:#999">Kein Würfel</span>') + '</div><div class="rr-stats"><div class="rr-stat"><div class="l">Würfel</div><div class="v">' + pool + '</div></div><div class="rr-stat"><div class="l">Erfolge</div><div class="v" data-hits style="color:#2e7d32">…</div></div><div class="rr-stat"><div class="l">Schaden</div><div class="v">' + dv + '</div></div><div class="rr-stat hl"><div class="l">Typ</div><div class="v">' + (stun ? 'Stun' : 'körp.') + '</div></div></div><div class="soak-out" data-out></div>';
+    setTimeout(() => {
+      const vals = []; res.querySelectorAll('.die').forEach(el => { const v = rand6(); vals.push(v); el.textContent = faces[v - 1]; el.classList.remove('rolling'); el.classList.add(v >= 5 ? 'hit' : v === 1 ? 'one' : 'miss'); });
+      const hits = vals.filter(v => v >= 5).length, ones = vals.filter(v => v === 1).length, glitch = pool > 0 && ones >= Math.ceil(pool / 2);
+      res.querySelector('[data-hits]').textContent = hits; const b = res.querySelector('[data-badge]');
+      if (glitch && hits === 0) { b.className = 'badge badge-crit'; b.textContent = '⚠ Kritischer Patzer!'; } else if (glitch) { b.className = 'badge badge-glitch'; b.textContent = '⚠ Patzer'; } else { b.className = 'badge badge-hit'; b.textContent = hits + (hits === 1 ? ' Erfolg' : ' Erfolge'); }
+      const net = Math.max(0, dv - hits), typeLabel = stun ? 'geistig (Stun)' : 'körperlich', out = res.querySelector('[data-out]');
+      if (dv > 0) { out.innerHTML = '<div class="soak-line">Schaden ' + dv + ' − ' + hits + ' = <b>' + net + '</b> → ' + typeLabel + '</div>' + (net > 0 ? '<button class="apply-btn" data-apply>→ ' + net + ' Kästchen ' + typeLabel + ' eintragen</button>' : '<div class="soak-line ok">✓ vollständig absorbiert</div>'); const ab = out.querySelector('[data-apply]'); if (ab) ab.onclick = () => { if (stun) { const aa = A(); const mS = 8 + ceil(aa.wil / 2) + modSum('monS'); const space = Math.max(0, mS - dmgS); const toS = Math.min(net, space); dmgS += toS; const ov = net - toS; if (ov > 0) dmgP += ov; ab.textContent = ov > 0 ? '✓ eingetragen (' + ov + ' → Körper übergelaufen)' : '✓ eingetragen'; } else { dmgP += net; ab.textContent = '✓ eingetragen'; } ab.disabled = true; onSheetInput(); }; }
+      else { out.innerHTML = '<div class="soak-line" style="color:#aaa">Trag oben einen Schadenswert ein.</div>'; }
+    }, 520);
+  }
+  function rollDrain() {
+    const pool = lastCalc.entzug, dv = intVal($('c-drainval')), res = $('widerstandResult'); res.style.display = 'block';
+    const vals = []; for (let i = 0; i < pool; i++) vals.push(rand6());
+    res.innerHTML = '<div class="rr-top"><div class="rr-title">Entzug widerstehen <small>' + pool + 'W6 · WIL+LOG</small></div><div class="badge" data-badge>…</div></div><div class="rr-dice">' + (vals.length ? vals.map(() => '<span class="die sm rolling">' + faces[Math.floor(Math.random() * 6)] + '</span>').join('') : '<span style="font-size:12px;color:#999">Kein Würfel</span>') + '</div><div class="rr-stats"><div class="rr-stat"><div class="l">Würfel</div><div class="v">' + pool + '</div></div><div class="rr-stat"><div class="l">Erfolge</div><div class="v" data-hits style="color:#2e7d32">…</div></div><div class="rr-stat"><div class="l">Entzug</div><div class="v">' + dv + '</div></div><div class="rr-stat hl"><div class="l">Typ</div><div class="v">geistig</div></div></div><div class="soak-out" data-out></div>';
+    setTimeout(() => {
+      const dieEls = res.querySelectorAll('.die'); vals.forEach((v, i) => { dieEls[i].textContent = faces[v - 1]; dieEls[i].classList.remove('rolling'); dieEls[i].classList.add(v >= 5 ? 'hit' : v === 1 ? 'one' : 'miss'); });
+      const hits = vals.filter(v => v >= 5).length, ones = vals.filter(v => v === 1).length, glitch = pool > 0 && ones >= Math.ceil(pool / 2);
+      res.querySelector('[data-hits]').textContent = hits; const b = res.querySelector('[data-badge]');
+      if (glitch && hits === 0) { b.className = 'badge badge-crit'; b.textContent = '⚠ Kritischer Patzer!'; } else if (glitch) { b.className = 'badge badge-glitch'; b.textContent = '⚠ Patzer'; } else { b.className = 'badge badge-hit'; b.textContent = hits + (hits === 1 ? ' Erfolg' : ' Erfolge'); }
+      const net = Math.max(0, dv - hits), out = res.querySelector('[data-out]');
+      if (dv > 0) { out.innerHTML = '<div class="soak-line">Entzug ' + dv + ' − ' + hits + ' = <b>' + net + '</b> → geistig</div>' + (net > 0 ? '<button class="apply-btn" data-apply>→ ' + net + ' geistig eintragen</button>' : '<div class="soak-line ok">✓ kein Entzugsschaden</div>'); const ab = out.querySelector('[data-apply]'); if (ab) ab.onclick = () => { const aa = A(); const mS = 8 + ceil(aa.wil / 2) + modSum('monS'); const space = Math.max(0, mS - dmgS); const toS = Math.min(net, space); dmgS += toS; const ov = net - toS; if (ov > 0) dmgP += ov; ab.disabled = true; ab.textContent = ov > 0 ? '✓ eingetragen (' + ov + ' → Körper)' : '✓ eingetragen'; onSheetInput(); }; }
+      else { out.innerHTML = '<div class="soak-line" style="color:#aaa">Trag oben den Entzugswert ein.</div>'; }
+    }, 520);
+  }
+  function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+  /* ===== Sheet ↔ Char-Daten ===== */
+  function serializeSheet() {
+    const attr = {}; ATTRS.forEach(x => attr[x.k] = intVal($('a-' + x.k)));
+    const deck = {}; DECK.forEach(x => deck[x.k] = intVal($('d-' + x.k)));
+    const ib = {}; INI.forEach(m => { const el = $('ib-' + m.tgt); ib[m.tgt] = el ? intVal(el) : 0; });
+    return {
+      name: $('c-name').value, meta: $('c-meta').value, karma: $('c-karma').value, attr,
+      edge: intVal($('s-edge')), aktedge: intVal($('s-aktedge')), essenz: numVal($('s-essenz')), magie: intVal($('s-magie')),
+      deck, iniBonus: ib, panzer: intVal($('c-panzer')), dk: intVal($('c-dk')), dmgP, dmgS,
+      mods: [...document.querySelectorAll('#modRows .mod-row')].map(r => ({ name: r.querySelector('.mod-name').value, target: r.querySelector('.mod-target').value, val: parseInt(r.querySelector('.mod-val').value, 10) || 0 })),
+      skills: [...document.querySelectorAll('#skillRows .sk-row')].map(r => ({ name: r.querySelector('.sk-name').value, attr: r.querySelector('.sk-attr').value, rating: intVal(r.querySelector('.sk-rating')) })),
+      weapons: [...document.querySelectorAll('#weaponRows .wp-row')].map(r => ({ name: r.querySelector('.wp-name').value, pool: intVal(r.querySelector('.wp-pool')), gen: r.querySelector('.wp-gen').value, dmg: r.querySelector('.wp-dmg').value, dk: r.querySelector('.wp-dk').value, rw: r.querySelector('.wp-rw').value, mod: r.querySelector('.wp-mod').value, seite: r.querySelector('.wp-seite').value })),
+      spells: [...document.querySelectorAll('#spellRows .wp-row')].map(r => ({ name: r.querySelector('.zb-name').value, pool: intVal(r.querySelector('.zb-pool')), typ: r.querySelector('.zb-typ').value, rw: r.querySelector('.zb-rw').value, dmg: r.querySelector('.zb-dmg').value, dauer: r.querySelector('.zb-dauer').value, entzug: r.querySelector('.zb-entzug').value, art: r.querySelector('.zb-art').value, seite: r.querySelector('.zb-seite').value })),
+      contacts: [...document.querySelectorAll('#contactRows .wp-row')].map(r => ({ name: r.querySelector('.ct-name').value, ort: r.querySelector('.ct-ort').value, arch: r.querySelector('.ct-arch').value, inf: r.querySelector('.ct-inf').value, loy: r.querySelector('.ct-loy').value })),
+      gear: [...document.querySelectorAll('#gearRows .wp-row')].map(r => ({ name: r.querySelector('.gr-name').value, typ: r.querySelector('.gr-typ').value, stufe: r.querySelector('.gr-stufe').value, ess: r.querySelector('.gr-ess').value, notiz: r.querySelector('.gr-notiz').value })),
+      notes: $('c-notes').value
+    };
+  }
+  function applyCharToSheet(d) {
+    d = d || {}; const at = d.attr || {};
+    ATTRS.forEach(a => $('a-' + a.k).value = at[a.k] != null ? at[a.k] : 3);
+    $('s-edge').value = d.edge != null ? d.edge : 3; $('s-aktedge').value = d.aktedge != null ? d.aktedge : 3; $('s-essenz').value = d.essenz != null ? d.essenz : 6; $('s-magie').value = d.magie != null ? d.magie : 0;
+    const dk = d.deck || {}; DECK.forEach(x => $('d-' + x.k).value = dk[x.k] != null ? dk[x.k] : 0);
+    $('c-name').value = d.name || ''; $('c-meta').value = d.meta || ''; $('c-karma').value = d.karma || '';
+    $('c-panzer').value = d.panzer != null ? d.panzer : 0; $('c-dk').value = d.dk != null ? d.dk : 0; $('c-schaden').value = 0; $('c-schadenart').value = 'K'; $('c-situativ').value = 0; $('c-drainval').value = 0; edgeArmed = false;
+    dmgP = d.dmgP || 0; dmgS = d.dmgS || 0;
+    $('modRows').innerHTML = ''; (d.mods || []).forEach(m => $('modRows').appendChild(makeModRow(m)));
+    $('skillRows').innerHTML = ''; (d.skills || []).forEach(s => $('skillRows').appendChild(makeSkillRow(s)));
+    $('weaponRows').innerHTML = ''; (d.weapons || []).forEach(wp => $('weaponRows').appendChild(makeWeaponRow(wp)));
+    $('spellRows').innerHTML = ''; (d.spells || []).forEach(sp => $('spellRows').appendChild(makeSpellRow(sp)));
+    $('contactRows').innerHTML = ''; (d.contacts || []).forEach(c => $('contactRows').appendChild(makeContactRow(c)));
+    $('gearRows').innerHTML = ''; (d.gear || []).forEach(g => $('gearRows').appendChild(makeGearRow(g)));
+    $('c-notes').value = d.notes || '';
+    iniBonus = {}; const ib = d.iniBonus || {}; INI.forEach(m => iniBonus[m.tgt] = ib[m.tgt] != null ? ib[m.tgt] : 0);
+    buildIniBlock(); recalc();
+    ['rollResult', 'widerstandResult', 'waffenResult', 'zauberResult'].forEach(r => { $(r).style.display = 'none'; $(r).innerHTML = ''; });
+  }
+
+  /* ===== Pure Ableitung (für Initiative-Tab) ===== */
+  function sumModsData(mods, t) { return (mods || []).reduce((s, m) => s + (m.target === t ? (+m.val || 0) : 0), 0); }
+  function effAttrsData(c) { const at = c.attr || {}; const o = {}; ATTRS.forEach(k => o[k.k] = (+at[k.k] || 0) + sumModsData(c.mods, 'attr-' + k.k)); o.magie = (+c.magie || 0) + sumModsData(c.mods, 'attr-mag'); o.dv = (c.deck && +c.deck.dv) || 0; return o; }
+  function charWound(c) { return Math.floor((+c.dmgP || 0) / 3) + Math.floor((+c.dmgS || 0) / 3); }
+  function deriveInit(c) { const a = effAttrsData(c); const ib = c.iniBonus || {}; const out = {}; INI.forEach(m => { out[m.key] = { base: m.base(a) + sumModsData(c.mods, m.tgt), dice: Math.min(MAX_DICE, m.baseDice + (ib[m.tgt] || 0) + (m.dtgt ? sumModsData(c.mods, m.dtgt) : 0)) }; }); return out; }
+
+  /* ===== Roster ===== */
+  let chars = [], nscs = [], activeChar = 0;
+  function readSheetIntoChar() { if (!chars[activeChar]) return; const fresh = serializeSheet(); fresh.activeMode = chars[activeChar].activeMode || 'Kampf & AR'; Object.assign(chars[activeChar], fresh); }
+  function renderCharTabs() {
+    const c = $('charTabs'); c.innerHTML = '';
+    chars.forEach((ch, i) => { const b = document.createElement('button'); b.className = 'char-tab' + (i === activeChar ? ' active' : ''); b.textContent = ch.name || ('Figur ' + (i + 1)); b.onclick = () => switchChar(i); c.appendChild(b); });
+    const add = document.createElement('button'); add.className = 'char-tab add'; add.textContent = '+ Charakter'; add.onclick = addChar; c.appendChild(add);
+    $('delChar').style.display = chars.length > 1 ? '' : 'none';
+  }
+  function switchChar(i) { if (i === activeChar) return; readSheetIntoChar(); activeChar = i; applyCharToSheet(chars[i]); renderCharTabs(); saveAll(); }
+  function addChar() { readSheetIntoChar(); chars.push(blankChar('Figur ' + (chars.length + 1), 3, 3)); activeChar = chars.length - 1; applyCharToSheet(chars[activeChar]); renderCharTabs(); saveAll(); }
+  function delChar() { if (chars.length <= 1) return; if (!confirm('Charakter „' + (chars[activeChar].name || '') + '" löschen?')) return; chars.splice(activeChar, 1); activeChar = Math.max(0, activeChar - 1); applyCharToSheet(chars[activeChar]); renderCharTabs(); saveAll(); }
+  function onSheetInput() { recalc(); readSheetIntoChar(); renderCharTabs(); scheduleSave(); }
+
+  /* ===== Initiative-Tab ===== */
+  function makeNdice(sel, onPick) { const w = document.createElement('div'); w.className = 'ndice'; for (let i = 1; i <= MAX_DICE; i++) { const b = document.createElement('button'); b.className = 'ndb' + (i === sel ? ' active' : ''); b.textContent = i; b.onclick = () => { w.querySelectorAll('.ndb').forEach(x => x.classList.remove('active')); b.classList.add('active'); onPick(i); }; w.appendChild(b); } return w; }
+  function renderIniRoster() {
+    const root = $('iniRoster'); root.innerHTML = '';
+    chars.forEach((c, ci) => {
+      const am = c.activeMode || 'Kampf & AR'; const di = deriveInit(c)[am]; const wnd = charWound(c); const present = c.present !== false;
+      const card = document.createElement('div'); card.className = 'ini-pc' + (present ? '' : ' away');
+      const head = document.createElement('div'); head.className = 'ini-pc-head';
+      head.innerHTML = '<label class="pres"><input type="checkbox" class="pres-cb"' + (present ? ' checked' : '') + '> dabei</label><span class="nm">' + escapeHtml(c.name || ('Figur ' + (ci + 1))) + '</span><span class="pv">' + am + ': ' + (di.base - wnd) + ' + ' + di.dice + 'W6' + (wnd ? ' <span style="color:#c62828">(Wunde −' + wnd + ')</span>' : '') + '</span>';
+      head.querySelector('.pres-cb').onchange = e => { chars[ci].present = e.target.checked; renderIniRoster(); saveAll(); };
+      const modes = document.createElement('div'); modes.className = 'imodes';
+      INI.forEach(m => { const b = document.createElement('button'); b.className = 'imode' + (m.key === am ? ' active' : ''); b.innerHTML = '<span class="mdot" style="background:' + m.color + '"></span>' + m.key; b.onclick = () => { chars[ci].activeMode = m.key; renderIniRoster(); saveAll(); }; modes.appendChild(b); });
+      card.append(head, modes); root.appendChild(card);
+    });
+    nscs.forEach((n, ni) => {
+      const row = document.createElement('div'); row.className = 'nsc-row';
+      const name = document.createElement('input'); name.className = 'n-name'; name.value = n.name || ''; name.placeholder = 'NSC'; name.oninput = () => { n.name = name.value; scheduleSave(); };
+      const base = document.createElement('input'); base.className = 'n-base'; base.type = 'number'; base.value = n.base != null ? n.base : 6; base.title = 'Initiative-Basis'; base.oninput = () => { n.base = intVal(base); scheduleSave(); };
+      const dice = makeNdice(n.dice || 1, v => { n.dice = v; saveAll(); });
+      const del = document.createElement('button'); del.className = 'xdel'; del.textContent = '×'; del.onclick = () => { nscs.splice(ni, 1); renderIniRoster(); saveAll(); };
+      const tag = document.createElement('span'); tag.className = 'mode-chip'; tag.textContent = 'NSC';
+      row.append(name, tag, base, dice, del); root.appendChild(row);
+    });
+  }
+  function gatherCombatants() {
+    const list = [];
+    chars.forEach((c, ci) => { if (c.present === false) return; const am = c.activeMode || 'Kampf & AR'; const di = deriveInit(c)[am]; const wnd = charWound(c); const rolls = []; for (let i = 0; i < di.dice; i++) rolls.push(rand6()); const sum = rolls.reduce((a, b) => a + b, 0); list.push({ name: c.name || '???', ci, base: di.base, wound: wnd, dice: di.dice, mode: am, rolls, sum, score: Math.max(0, di.base + sum - wnd) }); });
+    nscs.forEach(n => { const dice = n.dice || 1, rolls = []; for (let i = 0; i < dice; i++) rolls.push(rand6()); const sum = rolls.reduce((a, b) => a + b, 0); list.push({ name: n.name || 'NSC', ci: null, base: n.base || 0, wound: 0, dice, mode: null, rolls, sum, score: (n.base || 0) + sum }); });
+    return list;
+  }
+  function buildPasses(cbts) { let work = cbts.map(c => ({ name: c.name, score: c.score, base: c.base, mode: c.mode, ci: c.ci })); const passes = []; let g = 0; while (work.some(c => c.score > 0) && g < 60) { g++; const acting = work.filter(c => c.score > 0).sort((a, b) => b.score - a.score || b.base - a.base || a.name.localeCompare(b.name)).map(c => ({ name: c.name, score: c.score, mode: c.mode, ci: c.ci })); passes.push(acting); work = work.map(c => ({ name: c.name, score: c.score - 10, base: c.base, mode: c.mode, ci: c.ci })); } return passes; }
+  function modeChip(mode) { return mode ? '<span class="mode-chip"><span class="mdot" style="background:' + MODE_COLOR[mode] + '"></span>' + mode + '</span>' : '<span class="mode-chip">NSC</span>'; }
+  let iniRound = 0; const iniBox = $('iniResult');
+  function rollAndRender() {
+    readSheetIntoChar();
+    const cbts = gatherCombatants(); if (!cbts.length) return; iniBox.style.display = 'block';
+    let html = '<div class="ir-section-label">Wurf</div>';
+    cbts.forEach(c => { const diceHtml = c.rolls.map(() => '<span class="id rolling">' + faces[Math.floor(Math.random() * 6)] + '</span>').join(''); html += '<div class="ip"><div class="ip-name"><span class="nm">' + escapeHtml(c.name) + '</span>' + modeChip(c.mode) + '</div><div class="ip-calc"><span style="color:#111;font-weight:500">' + c.base + '</span>' + (c.wound ? ' <span style="color:#c62828">−' + c.wound + '</span>' : '') + ' +&nbsp;' + diceHtml + '</div><div class="ip-score">…</div></div>'; });
+    iniBox.innerHTML = html;
+    setTimeout(() => {
+      const ipEls = iniBox.querySelectorAll('.ip');
+      cbts.forEach((c, idx) => { const el = ipEls[idx]; const de = el.querySelectorAll('.id'); c.rolls.forEach((v, di) => { de[di].textContent = faces[v - 1]; de[di].classList.remove('rolling'); }); el.querySelector('.ip-score').textContent = c.score; });
+      renderOrder(cbts);
+    }, 520);
+  }
+  function renderOrder(cbts) {
+    const passes = buildPasses(cbts);
+    let h = '<div class="round-bar"><span class="round-num">Kampfrunde ' + iniRound + '</span><button class="btn-newround" id="btnNewRound">↻ Neue Kampfrunde</button></div><div class="order-hint">Name antippen → zur Figur (Browser-Zurück führt retour) · Häkchen = erledigt · ⏬ verzögern · gelb = ist dran</div>';
+    let seq = 0;
+    passes.forEach((pass, pi) => { h += '<div class="phase"><div class="phase-label">Aktionsphase ' + (pi + 1) + '<span class="phase-sub">' + (pi === 0 ? 'Initiative' : '−' + (pi * 10) + ' Ini') + '</span></div>'; pass.forEach((c, ci) => { const nameEl = (c.ci != null) ? '<button class="ord-name" data-ci="' + c.ci + '"><span class="nm">' + escapeHtml(c.name) + '</span>' + modeChip(c.mode) + '</button>' : '<div class="ord-name"><span class="nm">' + escapeHtml(c.name) + '</span>' + modeChip(c.mode) + '</div>'; h += '<div class="ord" data-rank="' + (ci + 1) + '"><input type="checkbox" class="ord-check" title="Erledigt / abgehakt"><div class="ord-rank">' + (ci + 1) + '</div>' + nameEl + '<div class="ord-score">' + c.score + '</div><button class="ord-delay" title="Verzögern — nach hinten schieben">⏬</button></div>'; seq++; }); h += '</div>'; });
+    h += '<div class="done-banner" id="doneBanner" style="display:none">✓ Kampfrunde ' + iniRound + ' durch — „Neue Kampfrunde" würfelt neu.</div>';
+    const wrap = document.createElement('div'); wrap.innerHTML = h; iniBox.appendChild(wrap);
+    wrap.querySelectorAll('.ord-check').forEach(cb => cb.onchange = () => { cb.closest('.ord').classList.toggle('done', cb.checked); refreshPointer(wrap); });
+    wrap.querySelectorAll('button.ord-name').forEach(b => b.onclick = () => goToChar(+b.dataset.ci));
+    wrap.querySelectorAll('.ord-delay').forEach(btn => btn.onclick = (e) => { e.stopPropagation(); const ord = btn.closest('.ord'); ord.parentElement.appendChild(ord); refreshPointer(wrap); });
+    wrap.querySelector('#btnNewRound').onclick = () => { iniRound++; rollAndRender(); };
+    refreshPointer(wrap);
+  }
+  function refreshPointer(wrap) { const ords = [...wrap.querySelectorAll('.ord')]; let set = false; ords.forEach(el => { el.classList.remove('current'); const done = el.querySelector('.ord-check').checked; const rk = el.querySelector('.ord-rank'); if (done) { el.classList.add('done'); rk.textContent = '✓'; } else { el.classList.remove('done'); rk.textContent = el.dataset.rank; if (!set) { el.classList.add('current'); set = true; } } }); const banner = wrap.querySelector('#doneBanner'); if (banner) banner.style.display = set ? 'none' : 'block'; }
+
+  /* ===== Defaults ===== */
+  function blankChar(name, rea, int) { return { name, meta: '', karma: '', attr: { kon:3, ges:3, rea:rea, sta:3, wil:3, log:3, int:int, cha:3 }, edge:3, aktedge:3, essenz:6, magie:0, deck:{ dv:0, fw:0, ang:0, schl:0 }, iniBonus:{}, panzer:0, dk:0, dmgP:0, dmgS:0, mods:[], skills:[{ name:'Wahrnehmung', attr:'int', rating:3 }], weapons:[], spells:[], contacts:[], gear:[], notes:'', present:true, activeMode:'Kampf & AR' }; }
+  function woodyChar() { return { name:'Woody', meta:'Mensch / Herm. Zauberer', karma:'', attr:{ kon:3, ges:2, rea:4, sta:2, wil:6, log:8, int:5, cha:8 }, edge:1, aktedge:1, essenz:6, magie:3, deck:{ dv:0, fw:0, ang:0, schl:0 }, iniBonus:{ iniKampf:2 }, panzer:9, dk:0, dmgP:0, dmgS:0, mods:[],
+    skills:[{ name:'Akrobatik', attr:'ges', rating:4 },{ name:'Arkana', attr:'log', rating:3 },{ name:'Askennen', attr:'int', rating:6 },{ name:'Astralkampf', attr:'wil', rating:3 },{ name:'Wahrnehmung', attr:'int', rating:4 },{ name:'Pistolen', attr:'ges', rating:2 },{ name:'Einschüchtern', attr:'cha', rating:3 },{ name:'Spruchzauberei', attr:'mag', rating:6 },{ name:'Herbeirufen', attr:'mag', rating:4 },{ name:'Antimagie', attr:'mag', rating:6 }],
+    weapons:[{ name:'Ares L.Fire 70 (Dienstpistole)', pool:4, gen:'7', dmg:'6K', dk:'-', rw:'-', mod:'HM', seite:'16 Schuss / S.428' },{ name:'Streetline (Tarnholster)', pool:4, gen:'4', dmg:'6K', dk:'-', rw:'-', mod:'HM', seite:'6 Schuss / S.427' },{ name:'Waffenfokus (Kurzschwert)', pool:2, gen:'6', dmg:'5K', dk:'-2', rw:'1', mod:'-', seite:'' },{ name:'Waffenfokus (Kurzschw./Astral)', pool:14, gen:'10', dmg:'11K', dk:'-', rw:'1', mod:'-', seite:'' },{ name:'Übungsaxt an der Wand', pool:2, gen:'4', dmg:'7K', dk:'-4', rw:'2', mod:'-', seite:'' }],
+    spells:[{ name:'Kampfsinn (+1W Nah/Fern/Vert.)', pool:9, typ:'Wahrn.', rw:'B', dmg:'-', dauer:'A', entzug:'KS', art:'M', seite:'293' },{ name:'Magie analysieren', pool:9, typ:'Wahrn.', rw:'B', dmg:'-', dauer:'A', entzug:'KS-3', art:'M', seite:'293' },{ name:'Erw. Magie entdecken', pool:9, typ:'Wahrn.', rw:'B', dmg:'-', dauer:'A', entzug:'KS', art:'M', seite:'293' },{ name:'Attr. steigern (Wille)', pool:9, typ:'Heilung', rw:'B', dmg:'-', dauer:'A', entzug:'KS-3', art:'P', seite:'281' },{ name:'Blitzstrahl', pool:9, typ:'Kampf', rw:'BF', dmg:'K', dauer:'S', entzug:'KS-3', art:'P', seite:'286' }],
+    contacts:[{ name:'Laurealka', ort:'Pomorya', arch:'Schamanin', inf:'4', loy:'3' },{ name:'Kim / Rüdiger', ort:'Rheine', arch:'Konzernmitarbeiter', inf:'2', loy:'4' },{ name:'Guido / Xratio', ort:'Siegburg', arch:'Mag. Verz. / Schieber', inf:'2', loy:'5' },{ name:'Bernd / Terconal', ort:'Bad Oeynhausen', arch:'Ex-Bundeswehr-Offizier', inf:'2', loy:'2' }],
+    gear:[{ name:'Synapsenbeschleuniger (Delta)', typ:'Bioware', stufe:'II', ess:'-0,5', notiz:'Eurokriege' },{ name:'Zerebralbooster (Delta)', typ:'Bioware', stufe:'III', ess:'-0,3', notiz:'Eurokriege' },{ name:'Panzerweste', typ:'Panzerung', stufe:'9', ess:'', notiz:'500¥' },{ name:'Komlink (Meta) + Troden', typ:'Elektronik', stufe:'1', ess:'', notiz:'170¥' },{ name:'AR-Handschuhe', typ:'Elektronik', stufe:'', ess:'', notiz:'150¥' }],
+    notes:'Hermetischer Zauberer. Astralkampf via Waffenfokus Kurzschwert (14W6).',
+    present:true, activeMode:'Kampf & AR' }; }
+  function defaultRoster() { return { chars: [woodyChar(), blankChar('Ralf', 4, 4), blankChar('Frank', 5, 4), blankChar('Johannes', 3, 5)], nscs: [], activeChar: 0 }; }
+
+  /* ===== Persistenz ===== */
+  function storageOK() { try { localStorage.setItem('__t', '1'); localStorage.removeItem('__t'); return true; } catch (e) { return false; } }
+  const canStore = storageOK();
+  function setStatus(t, c) { $('saveStatus').textContent = t; $('saveStatus').className = 'save-status' + (c ? ' ' + c : ''); }
+  let statusT; function flash(t) { setStatus(t, 'ok'); clearTimeout(statusT); statusT = setTimeout(() => setStatus(canStore ? 'Auto-Speicherung aktiv' : '⚠ Browser speichert lokal nicht — nutze Export/Import', canStore ? '' : 'warn'), 1600); }
+  function saveAll() { if (!canStore) return; try { readSheetIntoChar(); localStorage.setItem(STORAGE_KEY, JSON.stringify({ chars, nscs, activeChar })); flash('✓ gespeichert'); } catch (e) { setStatus('⚠ Speichern fehlgeschlagen', 'warn'); } }
+  function loadAll() { if (!canStore) return null; try { const r = localStorage.getItem(STORAGE_KEY); if (!r) return null; const o = JSON.parse(r); if (!o || !Array.isArray(o.chars) || !o.chars.length) return null; return o; } catch (e) { return null; } }
+  let saveT; function scheduleSave() { if (!canStore) return; clearTimeout(saveT); saveT = setTimeout(saveAll, 350); }
+
+  $('addSkill').onclick = () => { $('skillRows').appendChild(makeSkillRow({})); onSheetInput(); };
+  $('addMod').onclick = () => { $('modRows').appendChild(makeModRow({})); onSheetInput(); };
+  $('addWeapon').onclick = () => { $('weaponRows').appendChild(makeWeaponRow({})); onSheetInput(); };
+  $('addSpell').onclick = () => { $('spellRows').appendChild(makeSpellRow({})); onSheetInput(); };
+  $('soakRoll').onclick = rollSoak;
+  $('drainRoll').onclick = rollDrain;
+  $('addContact').onclick = () => { $('contactRows').appendChild(makeContactRow({})); onSheetInput(); };
+  $('addGear').onclick = () => { $('gearRows').appendChild(makeGearRow({})); onSheetInput(); };
+  $('healP').onclick = () => { if (dmgP > 0) { dmgP--; onSheetInput(); } };
+  $('healS').onclick = () => { if (dmgS > 0) { dmgS--; onSheetInput(); } };
+  $('healAll').onclick = () => { dmgP = 0; dmgS = 0; onSheetInput(); };
+  $('edgeArm').onclick = () => { if (intVal($('s-aktedge')) <= 0) edgeArmed = false; else edgeArmed = !edgeArmed; updateEdgeUI(); };
+  $('edgeRefresh').onclick = () => { $('s-aktedge').value = intVal($('s-edge')); onSheetInput(); };
+  $('delChar').onclick = delChar;
+  $('addNsc').onclick = () => { nscs.push({ name: 'NSC ' + (nscs.length + 1), base: 6, dice: 1 }); renderIniRoster(); saveAll(); };
+  $('iniRollBtn').onclick = () => { iniRound = 1; rollAndRender(); };
+
+  $('exportBtn').onclick = () => { readSheetIntoChar(); const blob = new Blob([JSON.stringify({ chars, nscs, activeChar }, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'blackrock-sr2036-roster.json'; a.click(); URL.revokeObjectURL(a.href); };
+  $('importBtn').onclick = () => $('importFile').click();
+  $('importFile').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const o = JSON.parse(r.result); if (!o || !Array.isArray(o.chars)) throw new Error('Format'); chars = o.chars; nscs = o.nscs || []; activeChar = o.activeChar || 0; if (activeChar >= chars.length) activeChar = 0; applyCharToSheet(chars[activeChar]); renderCharTabs(); renderIniRoster(); saveAll(); flash('✓ importiert'); } catch (err) { setStatus('⚠ Datei nicht lesbar', 'warn'); } }; r.readAsText(f); e.target.value = ''; };
+  $('resetBtn').onclick = () => { if (!confirm('Alles auf Standard zurücksetzen? Gespeicherte Charaktere gehen verloren.')) return; const d = defaultRoster(); chars = d.chars; nscs = d.nscs; activeChar = 0; applyCharToSheet(chars[0]); renderCharTabs(); renderIniRoster(); saveAll(); };
+
+  /* ===== Tabs ===== */
+  function showTab(tab) { const cur = document.querySelector('.tab.active'); if (cur && cur.dataset.tab === 'chars') readSheetIntoChar(); document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x.dataset.tab === tab)); document.querySelectorAll('.panel').forEach(x => x.classList.remove('active')); $('panel-' + tab).classList.add('active'); if (tab === 'ini') renderIniRoster(); if (tab === 'chars') renderCharTabs(); }
+  document.querySelectorAll('.tab').forEach(t => t.onclick = () => showTab(t.dataset.tab));
+  function goToChar(i) { try { history.pushState({ tab: 'chars', char: i }, ''); } catch (e) {} showTab('chars'); switchChar(i); }
+  window.addEventListener('popstate', e => { const s = e.state || {}; const tab = s.tab || 'ini'; showTab(tab); if (tab === 'chars' && s.char != null) switchChar(s.char); });
+
+  /* ===== Sheet-Eingabe-Listener ===== */
+  $('panel-chars').addEventListener('input', onSheetInput);
+  $('panel-chars').addEventListener('change', onSheetInput);
+
+  /* ===== Start ===== */
+  const loaded = loadAll() || defaultRoster();
+  chars = loaded.chars; nscs = loaded.nscs || []; activeChar = loaded.activeChar || 0; if (activeChar >= chars.length) activeChar = 0;
+  applyCharToSheet(chars[activeChar]); renderCharTabs(); renderIniRoster();
+  if (!canStore) setStatus('⚠ Browser speichert lokal nicht — nutze Export/Import', 'warn');
+</script>
+
+<footer style="margin-top:28px;padding-top:14px;border-top:1px solid #eee;font-size:11px;color:#999;text-align:center;line-height:1.6;">
+  Blackrock: Shadowrun 2036 &middot; v1.0.0<br>
+  Inoffizielles Fan-Tool &middot; l&auml;uft lokal im Browser &mdash; keine Server, keine Cookies
+</footer>
+</body>
+</html>
