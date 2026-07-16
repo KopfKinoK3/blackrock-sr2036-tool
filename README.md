@@ -1,7 +1,7 @@
 # Blackrock: Shadowrun 2036 — Würfeltool
 
 Ein schlankes Spielleiter- und Spieler-Tool für die Shadowrun-2036-Runde **Blackrock**.
-Würfelpool-Roller, Charakterbögen und Initiative-Tracker — alles in einer einzigen HTML-Datei. Keine Installation, kein Server, keine Abhängigkeiten.
+Würfelpool-Roller, Charakterbögen, Initiative-Tracker und der Blackrock-Regelteil (5 Leagues) — alles in einer einzigen HTML-Datei. Keine Installation, kein Server, keine Abhängigkeiten.
 
 **▶ Live-Demo:** https://KopfKinoK3.github.io/blackrock-sr2036-tool/
 
@@ -16,6 +16,7 @@ Würfelpool-Roller, Charakterbögen und Initiative-Tracker — alles in einer ei
 - **❤️ Zustandsmonitor** — Getrennte Schadensspuren für Körper und Geist, automatischer Wundabzug (−1 je 3 Kästchen), K.-o.-Status und Heilung.
 - **🛡️ Widerstand & Schaden** — Schadenswiderstand (KON + Panzerung − Durchschlagskraft), Entzug-Probe, automatische Bestimmung der Schadensart.
 - **⚡ Initiative** — Reihenfolge inklusive NSCs, Verzögern von Aktionen, Rundenzählung.
+- **🏰 Blackrock (5 Leagues)** — Eigener Regelteil auf 2W6-Basis: Avatar-Werte, Berufe und vollständiger 5L-Kampf mit bis zu 3 Abtauschen, Nah- und Fernkampf inkl. Gegnerwerten und Taktik.
 - **💾 Auto-Speicherung** — Speichert automatisch lokal im Browser; JSON-Export/-Import für Backups und Gerätewechsel.
 
 ## Schnellstart
@@ -36,13 +37,15 @@ Würfelpool-Roller, Charakterbögen und Initiative-Tracker — alles in einer ei
 | ≥ 50 % Einsen | Patzer |
 | Patzer + 0 Erfolge | Kritischer Patzer |
 
+Im **Blackrock-Tab (5 Leagues)** gilt stattdessen das 2W6-System: **2W6 + Wert ≥ 9** ist ein Erfolg.
+
 ## Daten & Datenschutz
 
 Das Tool nutzt ausschließlich den `localStorage` deines Browsers. Es gibt **keinen Server, keine Cookies, kein Tracking**. Über **⬇ Export / ⬆ Import** sicherst du deinen Spielstand als JSON-Datei oder überträgst ihn auf ein anderes Gerät. Mit **↺ Standard** setzt du auf den Auslieferungszustand zurück.
 
 ## Roadmap
 
-Version **1.0** ist die stabile Erstfassung. Eine **Ausbaustufe ist in Vorbereitung** — Details siehe [CHANGELOG.md](CHANGELOG.md).
+Aktuell ist **Version 2.0** — sie ergänzt die 1.0 um den kompletten Blackrock-Regelteil (5 Leagues). Alle Änderungen siehe [CHANGELOG.md](CHANGELOG.md).
 
 ## Lizenz
 

@@ -77,6 +77,17 @@
   .spec.readonly { background: #eef4fb; border-color: #cfe0f3; } .spec.readonly label { color: #1565c0; } .spec-v { width: 100%; text-align: center; font-size: 15px; font-weight: 700; color: #111; }
   button.spec-v { cursor: pointer; border: 1px solid #cfe0f3; background: #fff; border-radius: 5px; padding: 5px 2px; font-family: inherit; } button.spec-v:hover { background: #111; color: #fff; border-color: #111; }
   .move-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+  .bl-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid #f0f0f0; } .bl-row:last-child { border-bottom: none; }
+  .bl-name { flex: 1; font-size: 14px; font-weight: 500; } .bl-name small { color: #aaa; font-weight: 400; }
+  .bl-item { font-size: 11px; color: #888; display: flex; align-items: center; gap: 5px; } .bl-item input { width: 44px; padding: 5px 2px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 13px; color: #111; }
+  .bl-val { width: 52px; height: 38px; border: 1px solid #111; border-radius: 7px; background: #111; color: #fff; font-size: 17px; font-weight: 700; cursor: pointer; } .bl-val:hover { background: #333; }
+  .bl-combat { display: flex; gap: 8px; flex-wrap: wrap; } .bl-combat .ab-btn { flex: 1; }
+  .bl-opp { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .bl-opp .bl-opp-name { flex: 1; min-width: 120px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; color: #111; }
+  .bl-opp label { font-size: 11px; color: #666; display: flex; align-items: center; gap: 4px; } .bl-opp label input { width: 46px; padding: 6px 2px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 13px; color: #111; }
+  .melee-log { margin-bottom: 12px; } .melee-log .ml { font-size: 12px; color: #444; padding: 5px 0; border-bottom: 1px solid #f3f3f3; line-height: 1.4; } .melee-log .ml:last-child { border-bottom: none; } .melee-log .ml-sub { color: #888; }
+  .bl-set { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 11px; color: #666; }
+  .bl-set label { display: flex; align-items: center; gap: 4px; } .bl-set input[type=number] { width: 46px; padding: 6px 2px; border: 1px solid #ccc; border-radius: 5px; text-align: center; font-size: 13px; color: #111; } .bl-set select { padding: 6px 4px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; color: #111; }
 
   .sec { border: 1px solid #e2e2e2; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
   .sec-label { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: #999; font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
@@ -103,8 +114,32 @@
   .ab-sit { width: 56px; padding: 6px 4px; border: 1px solid #ccc; border-radius: 6px; text-align: center; font-size: 13px; color: #111; }
   .heal-bar { display: flex; gap: 6px; margin-top: 10px; }
   .heal-btn { flex: 1; padding: 7px; border: 1px solid #ccc; border-radius: 6px; background: #fff; font-size: 12px; font-weight: 500; cursor: pointer; color: #2e7d32; } .heal-btn:hover { background: #e8f5e9; border-color: #66bb6a; }
+  .dc-btn { padding: 5px 10px; border: 1px solid #b06a00; border-radius: 6px; background: #fff; color: #b06a00; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .dc-btn:hover { background: #fff7ec; }
+  .dc-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.62); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 90; }
+  .dc-overlay[hidden] { display: none; }
+  .dc-card { background: #14110e; border: 1px solid #3a2f22; border-radius: 12px; padding: 14px; max-width: 520px; width: 100%; max-height: 92vh; overflow-y: auto; }
+  .dc-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .dc-title { font-size: 13px; font-weight: 700; color: #f5e9d8; letter-spacing: .02em; }
+  .dc-title small { display: block; font-size: 10px; font-weight: 400; color: #9a8b78; margin-top: 3px; line-height: 1.4; }
+  .dc-close { flex: 0 0 auto; width: 28px; height: 28px; border: 1px solid #3a2f22; border-radius: 6px; background: transparent; color: #c9b89f; font-size: 16px; line-height: 1; cursor: pointer; }
+  .dc-close:hover { background: #241d16; }
+  #dcCanvas { display: block; width: 100%; height: auto; max-width: 480px; margin: 0 auto; touch-action: none; cursor: crosshair; }
+  .dc-info { margin-top: 10px; padding: 9px 11px; border: 1px solid #3a2f22; border-radius: 8px; background: #1c1712; color: #d8c9b3; font-size: 12px; line-height: 1.55; min-height: 46px; }
+  .dc-info b { color: #ffb04a; }
+  .dc-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 9px; font-size: 10px; color: #9a8b78; }
+  .dc-legend span { display: flex; align-items: center; gap: 4px; }
+  .dc-legend i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+  .dc-legend i.dash { border-top: 2px dashed #fff; height: 0; border-radius: 0; width: 14px; }
   .sc-btn { width: 100%; margin-top: 10px; padding: 8px; border: 1px solid #b06a00; border-radius: 7px; background: #fff; color: #b06a00; font-size: 12px; font-weight: 600; cursor: pointer; } .sc-btn:hover { background: #fff7ec; } .sc-btn:disabled { opacity: .5; cursor: default; }
   .notes-area { width: 100%; min-height: 70px; padding: 10px; border: 1px solid #ccc; border-radius: 7px; font-size: 13px; font-family: inherit; color: #111; resize: vertical; }
+  .notes-lbl { display: block; font-size: 11px; font-weight: 600; color: #888; margin: 9px 0 3px; text-transform: uppercase; letter-spacing: .04em; }
+  .spell-block { margin-bottom: 12px; min-width: 600px; }
+  .zb-notiz { width: 100%; box-sizing: border-box; margin-top: 4px; padding: 6px 9px; border: 1px solid #eee; border-radius: 6px; font-size: 12px; font-family: inherit; color: #555; }
+  .beruf-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+  .beruf-name { flex: 1; min-width: 0; padding: 7px 9px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; font-family: inherit; }
+  .beruf-stufe, .beruf-attr, .beruf-spez { padding: 6px 5px; border: 1px solid #ccc; border-radius: 6px; font-size: 12px; font-family: inherit; background: #fff; }
+  .beruf-roll { flex: 0 0 auto; }
   .ord-delay { width: 26px; height: 24px; border: 1px solid #ddd; border-radius: 5px; background: #fff; color: #888; cursor: pointer; font-size: 12px; flex-shrink: 0; } .ord-delay:hover { background: #fff8e1; border-color: #f0a000; color: #b06a00; }
 
   .wd-inputs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 8px; }
@@ -149,13 +184,13 @@
   .col-name { flex: 1; min-width: 130px; } .col-xs { width: 44px; text-align: center; flex-shrink: 0; } .col-s { width: 60px; text-align: center; flex-shrink: 0; } .col-m { width: 96px; flex-shrink: 0; }
   .roll-btn { width: 34px; height: 32px; flex-shrink: 0; border: 1px solid #111; border-radius: 6px; background: #111; color: #fff; cursor: pointer; font-size: 14px; } .roll-btn:hover { background: #333; }
 
-  .sk-head, .sk-row { display: grid; grid-template-columns: 1fr 64px 36px 44px 92px; gap: 8px; align-items: center; }
+  .sk-head, .sk-row { display: grid; grid-template-columns: 1fr 58px 52px 40px 86px; gap: 8px; align-items: center; }
   .sk-lim { text-align: center; font-size: 13px; font-weight: 600; color: #666; }
   .sk-head { font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: #aaa; margin-bottom: 6px; padding: 0 2px; }
   .sk-row { margin-bottom: 7px; }
   .sk-row input.sk-name { padding: 8px 9px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; min-width: 0; color: #111; }
   .sk-attr { padding: 8px 4px; border: 1px solid #ccc; border-radius: 6px; font-size: 12px; background: #fff; color: #111; }
-  .sk-rating { padding: 8px 2px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; text-align: center; color: #111; }
+  .sk-rating { padding: 8px 2px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; text-align: center; color: #111; background: #fff; }
   .sk-roll { display: flex; align-items: center; gap: 6px; }
   .sk-pool { flex: 1; text-align: center; font-size: 13px; font-weight: 600; color: #111; background: #f3f3f3; border-radius: 6px; padding: 8px 0; cursor: pointer; } .sk-pool:hover { background: #111; color: #fff; } .sk-pool small { font-weight: 400; color: #aaa; } .sk-pool:hover small { color: #ccc; }
   .sk-del { width: 26px; height: 32px; border: 1px solid #ddd; border-radius: 6px; background: #fff; color: #aaa; cursor: pointer; font-size: 15px; flex-shrink: 0; } .sk-del:hover { background: #ffebee; border-color: #c62828; color: #c62828; }
@@ -228,6 +263,7 @@
   <button class="tab active" data-tab="wuerfel">🎲 Würfler</button>
   <button class="tab" data-tab="chars">👤 Charaktere</button>
   <button class="tab" data-tab="ini">⚡ Initiative</button>
+  <button class="tab" data-tab="blackrock">🏰 Blackrock</button>
 </div>
 
 <!-- ===== WÜRFLER ===== -->
@@ -297,7 +333,11 @@
     <div id="wd-verdict" class="wd-verdict none"></div>
     <div class="wd-grid">
       <div class="wd-roll" id="soakRoll"><span class="wd-l">Schadenswid. <small style="opacity:.6">KON+Pnz−DK</small></span><span class="wd-v" id="wd-soak">0</span><span class="wd-go">⌖</span></div>
-      <div class="wd-roll" id="drainRoll"><span class="wd-l">Entzug <small style="opacity:.6">WIL+LOG</small></span><span class="wd-v" id="wd-drain">0</span><span class="wd-go">⌖</span></div>
+      <div class="wd-roll" id="drainRoll"><span class="wd-l">Entzug <small style="opacity:.6" id="wd-drain-l">WIL+LOG</small></span><span class="wd-v" id="wd-drain">0</span><span class="wd-go">⌖</span></div>
+    </div>
+    <div class="bl-set" style="margin-top:8px;">
+      <label title="Magie-Tradition: Entzug = Willenskraft + 2. Attribut">Entzug-Tradition: Willenskraft + <select id="drain-attr"><option value="log">Logik (Hermetiker)</option><option value="cha">Charisma (Schamane)</option><option value="int">Intuition</option></select></label>
+      <button class="dc-btn" id="drainChartBtn" title="Drain-Kraft-Optimierer: welche Kraftstufe ist für wen sicher?">◎ Drain-Chart</button>
     </div>
     <div class="roll-result" id="widerstandResult"></div>
   </div>
@@ -360,7 +400,12 @@
 
   <div class="sec">
     <div class="sec-label">Notizen</div>
-    <textarea class="notes-area" id="c-notes" placeholder="Hintergrund, Vor-/Nachteile, Sonstiges …"></textarea>
+    <label class="notes-lbl">Notizen I</label>
+    <textarea class="notes-area" id="c-notes1" placeholder="Notizen I …"></textarea>
+    <label class="notes-lbl">Notizen II</label>
+    <textarea class="notes-area" id="c-notes2" placeholder="Notizen II …"></textarea>
+    <label class="notes-lbl">Background</label>
+    <textarea class="notes-area" id="c-background" placeholder="Background / Hintergrundgeschichte …"></textarea>
   </div>
 
   <div class="sec">
@@ -378,6 +423,71 @@
   <button id="iniRollBtn">Initiative würfeln</button>
   <div class="roll-result" id="iniResult" style="display:none;"></div>
 </section>
+
+<!-- ===== BLACKROCK ===== -->
+<section class="panel" id="panel-blackrock">
+  <p class="subtitle">VR-Avatar in <b>Blackrock</b> (Prä-Matrix-VR). Werte abgeleitet: ⌊(SR-Quelle + BR-Level + Item) ÷ 3⌋. Körper-STÄ/KON zählen hier nicht. Wert antippen = 2W6-Probe (≥9).</p>
+  <div class="char-tabs" id="blCharTabs"></div>
+  <div class="action-bar">
+    <span class="ab-l">BR-Level</span><input type="number" class="ab-sit" id="bl-level" min="2" max="5" value="2">
+    <span class="ab-l" style="margin-left:auto;">Speed</span><span class="edge-pill" id="bl-speed">5</span>
+    <span class="ab-l">Wunden</span><span class="edge-pill" id="bl-wounds">1</span>
+  </div>
+  <div class="sec">
+    <div class="sec-label">Berufe <span class="opt">2W6 + Stufe + Attribut + Spez ≥ 9</span></div>
+    <div id="bl-berufe"></div>
+  </div>
+  <div class="sec">
+    <div class="sec-label">Kampf (5 Leagues) <span class="opt">volle Regeln · bis 3 Abtausche</span></div>
+    <div class="bl-set">
+      <label title="Avatar-Rüstung (Gear)">Eigene Rüstung <input type="number" id="bl-armor" min="0" value="0"></label>
+      <label>Taktik <select id="bl-tactic"><option value="normal">Normal</option><option value="def">Defensiv</option><option value="eva">Ausweichend</option><option value="fur">Furios</option></select></label>
+      <label title="Wie die Stärke im Schaden wirkt">Stärke→ <select id="bl-strmap"><option value="x">Rüstung (+x)</option><option value="y">Konst. (+y)</option><option value="both">beide</option><option value="none">nichts</option></select></label>
+    </div>
+    <div class="bl-set">
+      <label><input type="checkbox" id="bl-cp"> Parade (ich)</label>
+      <label><input type="checkbox" id="bl-cc"> Counter (ich)</label>
+      <label><input type="checkbox" id="opp-cp"> Parade (Gegner)</label>
+      <label><input type="checkbox" id="opp-cc"> Counter (Gegner)</label>
+    </div>
+    <div class="bl-opp">
+      <input class="bl-opp-name" id="opp-name" placeholder="Gegner">
+      <label title="Kampfwert">KW <input type="number" id="opp-fight" value="2"></label>
+      <label title="Rüstung">Rüst <input type="number" id="opp-armor" min="0" value="1"></label>
+      <label title="Konstitution / Toughness">KON <input type="number" id="opp-kon" value="4"></label>
+      <label title="Wunden bis Fall (Mook 1, Boss 2–3)">W <input type="number" id="opp-wounds" min="1" value="1"></label>
+      <label title="Schadensbonus des Gegners">Sch+ <input type="number" id="opp-dmg" value="0"></label>
+    </div>
+    <div class="bl-combat">
+      <button class="ab-btn" id="bl-melee">⚔ Nahkampf auswürfeln</button>
+      <label title="Fernkampf-Zielwert (Reichweite/Deckung)">🏹 Zielwert <input type="number" id="bl-rangetn" value="4" style="width:46px;padding:6px 2px;border:1px solid #ccc;border-radius:5px;text-align:center;"></label>
+      <button class="ab-btn" id="bl-ranged">🏹 Fernkampf</button>
+    </div>
+    <div class="roll-result" id="blResult"></div>
+  </div>
+  <div class="sec">
+    <div class="sec-label">Avatar-Werte <span class="opt">Wert antippen = 2W6 + Wert ≥ 9</span></div>
+    <div id="bl-vals"></div>
+  </div>
+</section>
+
+<div class="dc-overlay" id="dcOverlay" hidden>
+  <div class="dc-card">
+    <div class="dc-head">
+      <div class="dc-title">Drain-Kraft-Optimierer <small>Radius = Kraftstufe 1–12 · Sektor = Charakter · gestrichelt = MAG-Grenze</small></div>
+      <button class="dc-close" id="dcClose" title="Schließen">×</button>
+    </div>
+    <canvas id="dcCanvas" width="480" height="480"></canvas>
+    <div class="dc-info" id="dcInfo"></div>
+    <div class="dc-legend">
+      <span><i style="background:#3a8f22"></i>sicher</span>
+      <span><i style="background:#c07a0a"></i>Vorsicht</span>
+      <span><i style="background:#b84a18"></i>riskant</span>
+      <span><i style="background:#b01e1e"></i>tödlich</span>
+      <span><i class="dash"></i>MAG-Grenze (darüber = körperlicher Entzug)</span>
+    </div>
+  </div>
+</div>
 
 <script>
   const faces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
@@ -463,14 +573,14 @@
   function attrForSkill(k) { const a = A(); return k === 'mag' ? a.magie : (a[k] || 0); }
   let lastCalc = { limP:0, limM:0, limS:0, entzug:0 };
   function limitForSkill(k) { const grp = (SKILL_ATTRS.find(x => x.k === k) || {}).grp; if (grp === 'p') return lastCalc.limP; if (grp === 's') return lastCalc.limS; return lastCalc.limM; }
-  function makeSkillRow(s) { s = s || {}; const row = document.createElement('div'); row.className = 'sk-row'; const name = document.createElement('input'); name.className = 'sk-name'; name.value = s.name || 'Neue Fertigkeit'; const sel = document.createElement('select'); sel.className = 'sk-attr'; SKILL_ATTRS.forEach(a => { const o = document.createElement('option'); o.value = a.k; o.textContent = a.l; if ((s.attr || 'ges') === a.k) o.selected = true; sel.appendChild(o); }); const rating = document.createElement('input'); rating.className = 'sk-rating'; rating.type = 'number'; rating.min = '0'; rating.value = s.rating != null ? s.rating : 4; const rollWrap = document.createElement('div'); rollWrap.className = 'sk-roll'; const pool = document.createElement('div'); pool.className = 'sk-pool'; pool.title = 'Würfeln'; pool.onclick = () => rollSkill(row); const del = document.createElement('button'); del.className = 'sk-del'; del.textContent = '×'; del.onclick = () => { row.remove(); onSheetInput(); }; rollWrap.append(pool, del); const lim = document.createElement('div'); lim.className = 'sk-lim'; lim.title = 'Grenzwert'; row.append(name, sel, rating, lim, rollWrap); return row; }
+  function makeSkillRow(s) { s = s || {}; const row = document.createElement('div'); row.className = 'sk-row'; const name = document.createElement('input'); name.className = 'sk-name'; name.value = s.name || 'Neue Fertigkeit'; const sel = document.createElement('select'); sel.className = 'sk-attr'; SKILL_ATTRS.forEach(a => { const o = document.createElement('option'); o.value = a.k; o.textContent = a.l; if ((s.attr || 'ges') === a.k) o.selected = true; sel.appendChild(o); }); const rating = document.createElement('select'); rating.className = 'sk-rating'; rating.title = '−1 = ungelernt (Defaulting), sonst 1+'; [-1,1,2,3,4,5,6,7,8,9,10,11,12].forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = (n === -1 ? '−1' : n); rating.appendChild(o); }); let rv = (s.rating != null ? s.rating : 1); if (rv === 0) rv = -1; if (rv < -1) rv = -1; if (rv > 12) rv = 12; rating.value = rv; const rollWrap = document.createElement('div'); rollWrap.className = 'sk-roll'; const pool = document.createElement('div'); pool.className = 'sk-pool'; pool.title = 'Würfeln'; pool.onclick = () => rollSkill(row); const del = document.createElement('button'); del.className = 'sk-del'; del.textContent = '×'; del.onclick = () => { row.remove(); onSheetInput(); }; rollWrap.append(pool, del); const lim = document.createElement('div'); lim.className = 'sk-lim'; lim.title = 'Grenzwert'; row.append(name, sel, rating, lim, rollWrap); return row; }
   function skillData(row) { const k = row.querySelector('.sk-attr').value; const rating = intVal(row.querySelector('.sk-rating')); const adj = activeAdjust(); const pool = Math.max(0, rating + attrForSkill(k) + adj); return { name: row.querySelector('.sk-name').value, pool, adj, limit: limitForSkill(k) }; }
   function updateSkillPool(row) { const d = skillData(row); row.querySelector('.sk-pool').innerHTML = d.pool + (d.adj ? '<small> (' + (d.adj > 0 ? '+' + d.adj : d.adj) + ')</small>' : ''); const lc = row.querySelector('.sk-lim'); if (lc) lc.textContent = d.limit; }
 
   /* ===== Waffen & Zauber ===== */
   function smallInput(cls, val, ph, title) { const i = document.createElement('input'); i.className = cls; i.value = val != null ? val : ''; i.placeholder = ph || ''; if (title) i.title = title; return i; }
   function makeWeaponRow(wp) { wp = wp || {}; const row = document.createElement('div'); row.className = 'wp-row'; const name = smallInput('wp-name col-name', wp.name, 'Waffe'); const pool = smallInput('wp-pool col-xs', wp.pool, 'Pool', 'Basis-Würfelpool'); pool.type = 'number'; pool.min = '0'; const gen = smallInput('wp-gen col-xs', wp.gen, 'Gen.', 'Genauigkeit'); const dmg = smallInput('wp-dmg col-s', wp.dmg, 'Schad.', 'Schaden'); const dk = smallInput('wp-dk col-xs', wp.dk, 'DK', 'Durchschlagskraft'); const rw = smallInput('wp-rw col-xs', wp.rw, 'RW', 'Reichweite'); const mod = smallInput('wp-mod col-s', wp.mod, 'Modus'); const seite = smallInput('wp-seite col-m', wp.seite, 'Muni/Seite'); const rb = document.createElement('button'); rb.className = 'roll-btn'; rb.textContent = '⌖'; rb.title = 'Angriff würfeln'; rb.onclick = () => { const lim = parseInt(gen.value, 10); const eff = Math.max(0, intVal(pool) + activeAdjust()); const edge = consumeEdgeIfArmed(); doRoll(name.value || 'Angriff', eff, isNaN(lim) ? null : lim, $('waffenResult'), adjNote(), edge); }; const del = document.createElement('button'); del.className = 'xdel'; del.textContent = '×'; del.onclick = () => { row.remove(); onSheetInput(); }; row.append(name, pool, gen, dmg, dk, rw, mod, seite, rb, del); return row; }
-  function makeSpellRow(sp) { sp = sp || {}; const row = document.createElement('div'); row.className = 'wp-row'; const name = smallInput('zb-name col-name', sp.name, 'Zauber'); const pool = smallInput('zb-pool col-xs', sp.pool, 'Pool', 'Basis-Würfelpool'); pool.type = 'number'; pool.min = '0'; const typ = smallInput('zb-typ col-s', sp.typ, 'Typ'); const rw = smallInput('zb-rw col-xs', sp.rw, 'RW'); const dmg = smallInput('zb-dmg col-xs', sp.dmg, 'Schad.'); const dauer = smallInput('zb-dauer col-xs', sp.dauer, 'Dauer'); const entzug = smallInput('zb-entzug col-s', sp.entzug, 'Entzug'); const art = smallInput('zb-art col-xs', sp.art, 'Art'); const seite = smallInput('zb-seite col-xs', sp.seite, 'Seite'); const rb = document.createElement('button'); rb.className = 'roll-btn'; rb.textContent = '⌖'; rb.title = 'Zauber würfeln'; rb.onclick = () => { const eff = Math.max(0, intVal(pool) + activeAdjust()); const edge = consumeEdgeIfArmed(); doRoll(name.value || 'Zauber', eff, null, $('zauberResult'), adjNote(), edge); }; const del = document.createElement('button'); del.className = 'xdel'; del.textContent = '×'; del.onclick = () => { row.remove(); onSheetInput(); }; row.append(name, pool, typ, rw, dmg, dauer, entzug, art, seite, rb, del); return row; }
+  function makeSpellRow(sp) { sp = sp || {}; const row = document.createElement('div'); row.className = 'wp-row'; const name = smallInput('zb-name col-name', sp.name, 'Zauber'); const pool = smallInput('zb-pool col-xs', sp.pool, 'Pool', 'Basis-Würfelpool'); pool.type = 'number'; pool.min = '0'; const typ = smallInput('zb-typ col-s', sp.typ, 'Typ'); const rw = smallInput('zb-rw col-xs', sp.rw, 'RW'); const dmg = smallInput('zb-dmg col-xs', sp.dmg, 'Schad.'); const dauer = smallInput('zb-dauer col-xs', sp.dauer, 'Dauer'); const entzug = smallInput('zb-entzug col-s', sp.entzug, 'Entzug'); const art = smallInput('zb-art col-xs', sp.art, 'Art'); const seite = smallInput('zb-seite col-xs', sp.seite, 'Seite'); const rb = document.createElement('button'); rb.className = 'roll-btn'; rb.textContent = '⌖'; rb.title = 'Zauber würfeln'; rb.onclick = () => { const eff = Math.max(0, intVal(pool) + activeAdjust()); const edge = consumeEdgeIfArmed(); doRoll(name.value || 'Zauber', eff, null, $('zauberResult'), adjNote(), edge); }; const del = document.createElement('button'); del.className = 'xdel'; del.textContent = '×'; const block = document.createElement('div'); block.className = 'spell-block'; del.onclick = () => { block.remove(); onSheetInput(); }; row.append(name, pool, typ, rw, dmg, dauer, entzug, art, seite, rb, del); const notiz = document.createElement('input'); notiz.type = 'text'; notiz.className = 'zb-notiz'; notiz.value = sp.notiz || ''; notiz.placeholder = 'Kurzbeschreibung / Notiz zu diesem Zauber …'; notiz.oninput = onSheetInput; block.append(row, notiz); return block; }
   function adjNote() { const wm = woundMod(), gm = modSum('global'), si = situativ(); const parts = []; if (wm) parts.push('Wunde −' + wm); if (gm) parts.push('Mod ' + (gm > 0 ? '+' + gm : gm)); if (si) parts.push('Situativ ' + (si > 0 ? '+' + si : si)); return parts.join(' · '); }
 
   /* ===== Kontakte & Ausrüstung ===== */
@@ -488,7 +598,7 @@
     const limM = ceil((a.log * 2 + a.int + a.wil) / 3) + modSum('limM');
     const limS = ceil((a.cha * 2 + a.wil + a.essenz) / 3) + modSum('limS');
     const limA = Math.max(limM, limS) + modSum('limA');
-    const entzug = a.wil + a.log + modSum('entzug');
+    const drainAttr = $('drain-attr') ? $('drain-attr').value : 'log'; const entzug = a.wil + (a[drainAttr] || 0) + modSum('entzug'); if ($('wd-drain-l')) $('wd-drain-l').textContent = 'WIL+' + drainAttr.toUpperCase();
     lastCalc = { limP, limM, limS, limA, entzug };
     const wm = woundMod();
 
@@ -578,7 +688,7 @@
   function rollDrain() {
     const pool = lastCalc.entzug, dv = intVal($('c-drainval')), res = $('widerstandResult'); res.style.display = 'block';
     const vals = []; for (let i = 0; i < pool; i++) vals.push(rand6());
-    res.innerHTML = '<div class="rr-top"><div class="rr-title">Entzug widerstehen <small>' + pool + 'W6 · WIL+LOG</small></div><div class="badge" data-badge>…</div></div><div class="rr-dice">' + (vals.length ? vals.map(() => '<span class="die sm rolling">' + faces[Math.floor(Math.random() * 6)] + '</span>').join('') : '<span style="font-size:12px;color:#999">Kein Würfel</span>') + '</div><div class="rr-stats"><div class="rr-stat"><div class="l">Würfel</div><div class="v">' + pool + '</div></div><div class="rr-stat"><div class="l">Erfolge</div><div class="v" data-hits style="color:#2e7d32">…</div></div><div class="rr-stat"><div class="l">Entzug</div><div class="v">' + dv + '</div></div><div class="rr-stat hl"><div class="l">Typ</div><div class="v">geistig</div></div></div><div class="soak-out" data-out></div>';
+    res.innerHTML = '<div class="rr-top"><div class="rr-title">Entzug widerstehen <small>' + pool + 'W6 · WIL+' + (($('drain-attr') ? $('drain-attr').value : 'log').toUpperCase()) + '</small></div><div class="badge" data-badge>…</div></div><div class="rr-dice">' + (vals.length ? vals.map(() => '<span class="die sm rolling">' + faces[Math.floor(Math.random() * 6)] + '</span>').join('') : '<span style="font-size:12px;color:#999">Kein Würfel</span>') + '</div><div class="rr-stats"><div class="rr-stat"><div class="l">Würfel</div><div class="v">' + pool + '</div></div><div class="rr-stat"><div class="l">Erfolge</div><div class="v" data-hits style="color:#2e7d32">…</div></div><div class="rr-stat"><div class="l">Entzug</div><div class="v">' + dv + '</div></div><div class="rr-stat hl"><div class="l">Typ</div><div class="v">geistig</div></div></div><div class="soak-out" data-out></div>';
     setTimeout(() => {
       const dieEls = res.querySelectorAll('.die'); vals.forEach((v, i) => { dieEls[i].textContent = faces[v - 1]; dieEls[i].classList.remove('rolling'); dieEls[i].classList.add(v >= 5 ? 'hit' : v === 1 ? 'one' : 'miss'); });
       const hits = vals.filter(v => v >= 5).length, ones = vals.filter(v => v === 1).length, glitch = pool > 0 && ones >= Math.ceil(pool / 2);
@@ -603,10 +713,10 @@
       mods: [...document.querySelectorAll('#modRows .mod-row')].map(r => ({ name: r.querySelector('.mod-name').value, target: r.querySelector('.mod-target').value, val: parseInt(r.querySelector('.mod-val').value, 10) || 0 })),
       skills: [...document.querySelectorAll('#skillRows .sk-row')].map(r => ({ name: r.querySelector('.sk-name').value, attr: r.querySelector('.sk-attr').value, rating: intVal(r.querySelector('.sk-rating')) })),
       weapons: [...document.querySelectorAll('#weaponRows .wp-row')].map(r => ({ name: r.querySelector('.wp-name').value, pool: intVal(r.querySelector('.wp-pool')), gen: r.querySelector('.wp-gen').value, dmg: r.querySelector('.wp-dmg').value, dk: r.querySelector('.wp-dk').value, rw: r.querySelector('.wp-rw').value, mod: r.querySelector('.wp-mod').value, seite: r.querySelector('.wp-seite').value })),
-      spells: [...document.querySelectorAll('#spellRows .wp-row')].map(r => ({ name: r.querySelector('.zb-name').value, pool: intVal(r.querySelector('.zb-pool')), typ: r.querySelector('.zb-typ').value, rw: r.querySelector('.zb-rw').value, dmg: r.querySelector('.zb-dmg').value, dauer: r.querySelector('.zb-dauer').value, entzug: r.querySelector('.zb-entzug').value, art: r.querySelector('.zb-art').value, seite: r.querySelector('.zb-seite').value })),
+      spells: [...document.querySelectorAll('#spellRows .spell-block')].map(r => ({ name: r.querySelector('.zb-name').value, pool: intVal(r.querySelector('.zb-pool')), typ: r.querySelector('.zb-typ').value, rw: r.querySelector('.zb-rw').value, dmg: r.querySelector('.zb-dmg').value, dauer: r.querySelector('.zb-dauer').value, entzug: r.querySelector('.zb-entzug').value, art: r.querySelector('.zb-art').value, seite: r.querySelector('.zb-seite').value, notiz: (r.querySelector('.zb-notiz') ? r.querySelector('.zb-notiz').value : '') })),
       contacts: [...document.querySelectorAll('#contactRows .wp-row')].map(r => ({ name: r.querySelector('.ct-name').value, ort: r.querySelector('.ct-ort').value, arch: r.querySelector('.ct-arch').value, inf: r.querySelector('.ct-inf').value, loy: r.querySelector('.ct-loy').value })),
       gear: [...document.querySelectorAll('#gearRows .wp-row')].map(r => ({ name: r.querySelector('.gr-name').value, typ: r.querySelector('.gr-typ').value, stufe: r.querySelector('.gr-stufe').value, ess: r.querySelector('.gr-ess').value, notiz: r.querySelector('.gr-notiz').value })),
-      notes: $('c-notes').value
+      notes1: $('c-notes1').value, notes2: $('c-notes2').value, background: $('c-background').value, drainAttr: ($('drain-attr') ? $('drain-attr').value : 'log')
     };
   }
   function applyCharToSheet(d) {
@@ -623,7 +733,7 @@
     $('spellRows').innerHTML = ''; (d.spells || []).forEach(sp => $('spellRows').appendChild(makeSpellRow(sp)));
     $('contactRows').innerHTML = ''; (d.contacts || []).forEach(c => $('contactRows').appendChild(makeContactRow(c)));
     $('gearRows').innerHTML = ''; (d.gear || []).forEach(g => $('gearRows').appendChild(makeGearRow(g)));
-    $('c-notes').value = d.notes || '';
+    $('c-notes1').value = (d.notes1 != null ? d.notes1 : (d.notes || '')); $('c-notes2').value = d.notes2 || ''; $('c-background').value = d.background || ''; if ($('drain-attr')) $('drain-attr').value = d.drainAttr || 'log';
     iniBonus = {}; const ib = d.iniBonus || {}; INI.forEach(m => iniBonus[m.tgt] = ib[m.tgt] != null ? ib[m.tgt] : 0);
     buildIniBlock(); recalc();
     ['rollResult', 'widerstandResult', 'waffenResult', 'zauberResult'].forEach(r => { $(r).style.display = 'none'; $(r).innerHTML = ''; });
@@ -636,7 +746,7 @@
   function deriveInit(c) { const a = effAttrsData(c); const ib = c.iniBonus || {}; const out = {}; INI.forEach(m => { out[m.key] = { base: m.base(a) + sumModsData(c.mods, m.tgt), dice: Math.min(MAX_DICE, m.baseDice + (ib[m.tgt] || 0) + (m.dtgt ? sumModsData(c.mods, m.dtgt) : 0)) }; }); return out; }
 
   /* ===== Roster ===== */
-  let chars = [], nscs = [], activeChar = 0;
+  let chars = [], nscs = [], activeChar = 0; let settings = { strMap: 'x' };
   function readSheetIntoChar() { if (!chars[activeChar]) return; const fresh = serializeSheet(); fresh.activeMode = chars[activeChar].activeMode || 'Kampf & AR'; Object.assign(chars[activeChar], fresh); }
   function renderCharTabs() {
     const c = $('charTabs'); c.innerHTML = '';
@@ -709,8 +819,144 @@
   }
   function refreshPointer(wrap) { const ords = [...wrap.querySelectorAll('.ord')]; let set = false; ords.forEach(el => { el.classList.remove('current'); const done = el.querySelector('.ord-check').checked; const rk = el.querySelector('.ord-rank'); if (done) { el.classList.add('done'); rk.textContent = '✓'; } else { el.classList.remove('done'); rk.textContent = el.dataset.rank; if (!set) { el.classList.add('current'); set = true; } } }); const banner = wrap.querySelector('#doneBanner'); if (banner) banner.style.display = set ? 'none' : 'block'; }
 
+  /* ===== Blackrock (VR-Avatar) ===== */
+  function blValues(c) {
+    const a = effAttrsData(c); const L = Math.max(2, Math.min(5, c.brLevel || 2)); const it = c.brItems || {};
+    const f = (src, k) => Math.floor((src + L + (+it[k] || 0)) / 3);
+    return { L, agi: f(a.ges, 'agi'), fight: f(a.ges, 'fight'), sta: f(a.wil, 'sta'), kon: f(a.wil, 'kon'), mind: f(a.log, 'mind'), appeal: f(a.cha, 'appeal'), wahr: f(a.int, 'wahr'), speed: Math.max(5, 3 + Math.floor((a.rea + L) / 3)), wunden: Math.ceil(L / 3) };
+  }
+  function renderBlCharTabs() { const cc = $('blCharTabs'); cc.innerHTML = ''; chars.forEach((ch, i) => { const b = document.createElement('button'); b.className = 'char-tab' + (i === activeChar ? ' active' : ''); b.textContent = ch.name || ('Figur ' + (i + 1)); b.onclick = () => { if (i !== activeChar) switchChar(i); renderBlackrock(); }; cc.appendChild(b); }); }
+  function renderBlackrock() {
+    const c = chars[activeChar]; if (!c) return; renderBlCharTabs();
+    const v = blValues(c), it = c.brItems || {};
+    $('bl-level').value = v.L; $('bl-speed').textContent = v.speed; $('bl-wounds').textContent = v.wunden;
+    if ($('bl-armor')) $('bl-armor').value = c.brArmor || 0; if ($('bl-strmap')) $('bl-strmap').value = settings.strMap || 'x';
+    const rows = [['agi', 'Agilität', 'GES'], ['fight', 'Fight', 'GES'], ['sta', 'Stärke', 'WIL'], ['kon', 'Konstitution', 'WIL'], ['mind', 'Mind', 'LOG'], ['appeal', 'Appeal', 'CHA'], ['wahr', 'Wahrnehmung', 'INT']];
+    $('bl-vals').innerHTML = rows.map(r => '<div class="bl-row"><span class="bl-name">' + r[1] + ' <small>⌊(' + r[2] + ' + Lvl + It) ÷ 3⌋</small></span><span class="bl-item">Item <input type="number" class="bl-item-in" data-bl="' + r[0] + '" min="0" max="3" value="' + (+(it[r[0]] || 0)) + '"></span><button class="bl-val" data-name="' + r[1] + '" data-v="' + v[r[0]] + '">' + v[r[0]] + '</button></div>').join('');
+    $('bl-vals').querySelectorAll('.bl-item-in').forEach(inp => inp.onchange = () => { c.brItems = c.brItems || {}; c.brItems[inp.dataset.bl] = Math.max(0, Math.min(3, intVal(inp))); renderBlackrock(); saveAll(); });
+    $('bl-vals').querySelectorAll('.bl-val').forEach(b => b.onclick = () => blProbe(b.dataset.name, +b.dataset.v));
+    renderBerufe(c);
+  }
+  function berufeAttrs() { return [['agi','Agilität'],['fight','Fight'],['sta','Stärke'],['kon','Konstitution'],['mind','Mind'],['appeal','Appeal'],['wahr','Wahrnehmung']]; }
+  function renderBerufe(c) {
+    const host = $('bl-berufe'); if (!host) return;
+    const v = blValues(c);
+    if (!Array.isArray(c.berufe)) c.berufe = [];
+    while (c.berufe.length < 5) c.berufe.push({ name: '', stufe: 1, attr: 'agi', spez: 0 });
+    const attrs = berufeAttrs();
+    const spezOpts = [-3,-2,-1,0,1,2,3].map(n => '<option value="' + n + '">Spez ' + (n > 0 ? '+' + n : n) + '</option>').join('');
+    const stufeOpts = [1,2,3].map(n => '<option value="' + n + '">St. ' + n + '</option>').join('');
+    host.innerHTML = c.berufe.map((b, i) => {
+      const attrOpts = attrs.map(a => '<option value="' + a[0] + '"' + (b.attr === a[0] ? ' selected' : '') + '>' + a[1] + ' (' + v[a[0]] + ')</option>').join('');
+      return '<div class="beruf-row">' +
+        '<input class="beruf-name" data-i="' + i + '" placeholder="Beruf / Karriere">' +
+        '<select class="beruf-stufe" data-i="' + i + '">' + stufeOpts + '</select>' +
+        '<select class="beruf-attr" data-i="' + i + '">' + attrOpts + '</select>' +
+        '<select class="beruf-spez" data-i="' + i + '">' + spezOpts + '</select>' +
+        '<button class="bl-val beruf-roll" data-i="' + i + '" title="2W6 + Stufe + Attribut + Spez ≥ 9">⌖</button></div>';
+    }).join('');
+    host.querySelectorAll('.beruf-name').forEach(inp => { inp.value = c.berufe[+inp.dataset.i].name || ''; inp.oninput = () => { c.berufe[+inp.dataset.i].name = inp.value; saveAll(); }; });
+    host.querySelectorAll('.beruf-stufe').forEach(sel => { sel.value = c.berufe[+sel.dataset.i].stufe || 1; sel.onchange = () => { c.berufe[+sel.dataset.i].stufe = +sel.value; saveAll(); }; });
+    host.querySelectorAll('.beruf-attr').forEach(sel => { sel.onchange = () => { c.berufe[+sel.dataset.i].attr = sel.value; saveAll(); }; });
+    host.querySelectorAll('.beruf-spez').forEach(sel => { sel.value = c.berufe[+sel.dataset.i].spez || 0; sel.onchange = () => { c.berufe[+sel.dataset.i].spez = +sel.value; saveAll(); }; });
+    host.querySelectorAll('.beruf-roll').forEach(btn => btn.onclick = () => {
+      const b = c.berufe[+btn.dataset.i]; const vv = blValues(c);
+      const attrLabel = (attrs.find(a => a[0] === b.attr) || ['', b.attr])[1];
+      const attrVal = vv[b.attr] || 0; const stufe = +b.stufe || 1; const spez = +b.spez || 0;
+      const value = stufe + attrVal + spez;
+      const label = (b.name || 'Beruf') + ' — St. ' + stufe + ' + ' + attrLabel + ' ' + attrVal + (spez ? ' + Spez ' + (spez > 0 ? '+' + spez : spez) : '');
+      blProbe(label, value);
+    });
+  }
+  function blProbe(name, value) {
+    const res = $('blResult'); res.style.display = 'block';
+    const show = () => {
+      const d1 = rand6(), d2 = rand6(), sum = d1 + d2, total = sum + value, ok = total >= 9, crit = d1 === 6 && d2 === 6, fumble = d1 === 1 && d2 === 1;
+      const bd = crit ? ['badge-hit', '★ Großer Erfolg'] : fumble ? ['badge-crit', '⚠ Patzer'] : ok ? ['badge-hit', 'Erfolg ✓'] : ['badge-zero', 'Misserfolg'];
+      const eg = intVal($('s-aktedge')) > 0 ? '<button class="sc-btn" data-bledge>🎲 Edge: 2W6 neu (−1)</button>' : '';
+      res.innerHTML = '<div class="rr-top"><div class="rr-title">' + escapeHtml(name) + ' <small>2W6 + ' + value + ' ≥ 9</small></div><div class="badge ' + bd[0] + '">' + bd[1] + '</div></div>' +
+        '<div class="rr-dice"><span class="die sm ' + (d1 >= 5 ? 'hit' : d1 === 1 ? 'one' : 'miss') + '">' + faces[d1 - 1] + '</span><span class="die sm ' + (d2 >= 5 ? 'hit' : d2 === 1 ? 'one' : 'miss') + '">' + faces[d2 - 1] + '</span></div>' +
+        '<div class="rr-stats"><div class="rr-stat"><div class="l">2W6</div><div class="v">' + sum + '</div></div><div class="rr-stat"><div class="l">Wert</div><div class="v">+' + value + '</div></div><div class="rr-stat hl"><div class="l">Summe</div><div class="v">' + total + '</div></div><div class="rr-stat"><div class="l">Ziel</div><div class="v">9</div></div></div>' + eg;
+      const eb = res.querySelector('[data-bledge]'); if (eb) eb.onclick = () => { if (intVal($('s-aktedge')) <= 0) return; $('s-aktedge').value = intVal($('s-aktedge')) - 1; onSheetInput(); show(); };
+    };
+    show();
+  }
+  function blCombat(name, value) {
+    const res = $('blResult'); res.style.display = 'block';
+    const d = rand6(), total = d + value;
+    res.innerHTML = '<div class="rr-top"><div class="rr-title">' + escapeHtml(name) + ' <small>1W6 + ' + value + '</small></div><div class="badge badge-hit">Summe ' + total + '</div></div><div class="rr-dice"><span class="die sm ' + (d >= 5 ? 'hit' : d === 1 ? 'one' : 'miss') + '">' + faces[d - 1] + '</span><span style="align-self:center;font-size:13px;color:#666;margin-left:6px">+ ' + value + ' = <b style="color:#111">' + total + '</b></span></div>';
+  }
+
+  function blCombatants() {
+    const c = chars[activeChar]; const v = blValues(c);
+    const P = { name: c.name || 'Avatar', fight: v.fight, str: v.sta, armor: intVal($('bl-armor')), tough: v.kon, cap: v.wunden, w: 0, stun: false, parry: $('bl-cp').checked, counter: $('bl-cc').checked, isP: true };
+    const O = { name: ($('opp-name').value || 'Gegner'), fight: intVal($('opp-fight')), str: intVal($('opp-dmg')), armor: intVal($('opp-armor')), tough: intVal($('opp-kon')), cap: Math.max(1, intVal($('opp-wounds'))), w: 0, stun: false, parry: $('opp-cp').checked, counter: $('opp-cc').checked, isP: false };
+    return { P, O, strMap: settings.strMap || 'x' };
+  }
+  function blXY(att, strMap, furious) { let x = 0, y = 0; if (strMap === 'x' || strMap === 'both') x += att.str; if (strMap === 'y' || strMap === 'both') y += att.str; if (furious) y += 1; return { x, y }; }
+  function blHit(att, def, strMap, log, furious, defNat1) {
+    if (def.parry && defNat1) { log.push('<span class="ml-sub">' + escapeHtml(def.name) + ' pariert (natürliche 1) — Treffer abgewehrt.</span>'); return; }
+    const e = blXY(att, strMap, furious);
+    if (def.armor > 0) {
+      const r = rand6(), t = r + e.x;
+      if (t > def.armor) { log.push('<span class="ml-sub">Rüstung: ' + r + (e.x ? '+' + e.x : '') + '=' + t + ' &gt; ' + def.armor + ' ✓</span>'); }
+      else if (t === def.armor) { def.stun = true; log.push('<span class="ml-sub">Rüstung: ' + r + (e.x ? '+' + e.x : '') + '=' + t + ' = ' + def.armor + ' → ' + escapeHtml(def.name) + ' betäubt, kein Schaden.</span>'); return; }
+      else { log.push('<span class="ml-sub">Rüstung: ' + r + (e.x ? '+' + e.x : '') + '=' + t + ' &lt; ' + def.armor + ' → abgewehrt.</span>'); return; }
+    }
+    const r2 = rand6();
+    if (r2 === 1) { def.stun = true; log.push('<span class="ml-sub">Konst.: natürliche 1 → ' + escapeHtml(def.name) + ' betäubt, keine Wunde.</span>'); return; }
+    const t2 = r2 + e.y;
+    if (t2 > def.tough) { def.w = def.cap + 99; log.push('<span class="ml-sub">Konst.: ' + r2 + (e.y ? '+' + e.y : '') + '=' + t2 + ' &gt; ' + def.tough + ' → <b>' + escapeHtml(def.name) + ' fällt!</b></span>'); }
+    else { def.w++; def.stun = true; log.push('<span class="ml-sub">Konst.: ' + r2 + (e.y ? '+' + e.y : '') + '=' + t2 + ' ≤ ' + def.tough + ' → Wunde ' + Math.min(def.w, def.cap) + '/' + def.cap + (def.w >= def.cap ? ' → <b>fällt!</b>' : '') + '</span>'); }
+  }
+  function blMelee() {
+    const cc = blCombatants(); const P = cc.P, O = cc.O, strMap = cc.strMap;
+    const tactic = $('bl-tactic').value; const cNeg = (tactic === 'def' || tactic === 'eva');
+    let attacker = P, defender = O, log = [], ended = '';
+    if (tactic === 'fur' && O.counter) log.push('<i>Furios nicht erlaubt (Gegner hat Counter) — als Normal gewertet.</i>');
+    const fur = (tactic === 'fur' && !O.counter);
+    for (let ex = 1; ex <= 3; ex++) {
+      const aB = defender.stun ? 1 : 0, dB = attacker.stun ? 1 : 0;
+      const aR = (attacker.isP && tactic === 'def') ? Math.max(rand6(), rand6()) : rand6();
+      const dR = (defender.isP && tactic === 'def') ? Math.max(rand6(), rand6()) : rand6();
+      attacker.stun = false; defender.stun = false;
+      const ta = aR + attacker.fight + aB, td = dR + defender.fight + dB;
+      const l = '<b>Abtausch ' + ex + ':</b> ' + escapeHtml(attacker.name) + ' ' + aR + '+' + attacker.fight + (aB ? '+' + aB : '') + '=' + ta + '  vs  ' + escapeHtml(defender.name) + ' ' + dR + '+' + defender.fight + (dB ? '+' + dB : '') + '=' + td;
+      if (ta === td) { log.push(l + ' → Gleichstand, Kampf endet.'); ended = 'Unentschieden'; break; }
+      if (ta > td) {
+        log.push(l + ' → ' + escapeHtml(attacker.name) + ' gewinnt.');
+        const noHit = attacker.isP && (tactic === 'def' || tactic === 'eva');
+        if (noHit) { log.push('<span class="ml-sub">' + (tactic === 'eva' ? 'Ausweichend: kein Treffer, löst sich (Kampf endet).' : 'Defensiv: kein Treffer.') + '</span>'); if (tactic === 'eva') { ended = 'Ausweichend gelöst'; break; } }
+        else { blHit(attacker, defender, strMap, log, (attacker.isP && fur), dR === 1); if (defender.w >= defender.cap) { ended = escapeHtml(defender.name) + ' fällt!'; break; } }
+      } else {
+        log.push(l + ' → ' + escapeHtml(defender.name) + ' gewinnt die Initiative.');
+        if (defender.counter && !(defender === O && cNeg)) { log.push('<span class="ml-sub">Counter-Attack: ' + escapeHtml(defender.name) + ' trifft.</span>'); blHit(defender, attacker, strMap, log, false, aR === 1); if (attacker.w >= attacker.cap) { ended = escapeHtml(attacker.name) + ' fällt!'; break; } }
+        if (attacker.isP && fur) { log.push('<span class="ml-sub">Furios verloren → ' + escapeHtml(attacker.name) + ' kassiert einen Treffer.</span>'); blHit(defender, attacker, strMap, log, false, false); if (attacker.w >= attacker.cap) { ended = escapeHtml(attacker.name) + ' fällt!'; break; } }
+        const t = attacker; attacker = defender; defender = t;
+      }
+      if (ex === 3) ended = 'Nach 3 Abtauschen getrennt';
+    }
+    blRenderCombat(P, O, ended, log, 'Nahkampf');
+  }
+  function blRanged() {
+    const cc = blCombatants(); const P = cc.P, O = cc.O, strMap = cc.strMap;
+    const tn = intVal($('bl-rangetn')) || 4; const r = rand6(), tot = r + P.fight; const log = []; let ended = '';
+    if (r === 1) { log.push('Fernkampf: natürliche 1 → Ladehemmung, daneben.'); ended = 'Patzer'; }
+    else if (tot >= tn) { log.push('Fernkampf: ' + r + '+' + P.fight + '=' + tot + ' ≥ Zielwert ' + tn + ' → Treffer!'); blHit(P, O, strMap, log, false, false); ended = O.w >= O.cap ? escapeHtml(O.name) + ' fällt!' : 'Treffer'; }
+    else { log.push('Fernkampf: ' + r + '+' + P.fight + '=' + tot + ' &lt; Zielwert ' + tn + ' → daneben.'); ended = 'Daneben'; }
+    blRenderCombat(P, O, ended, log, 'Fernkampf');
+  }
+  function blRenderCombat(P, O, ended, log, title) {
+    const downO = O.w >= O.cap, downP = P.w >= P.cap;
+    const badge = downO ? 'badge-hit' : downP ? 'badge-crit' : 'badge-zero';
+    const res = $('blResult'); res.style.display = 'block';
+    res.innerHTML = '<div class="rr-top"><div class="rr-title">' + title + ': ' + escapeHtml(P.name) + ' vs ' + escapeHtml(O.name) + '</div><div class="badge ' + badge + '">' + ended + '</div></div>' +
+      '<div class="melee-log">' + log.map(function (x) { return '<div class="ml">' + x + '</div>'; }).join('') + '</div>' +
+      '<div class="rr-stats"><div class="rr-stat"><div class="l">' + escapeHtml(P.name) + '</div><div class="v">' + Math.min(P.w, P.cap) + '/' + P.cap + ' W</div></div><div class="rr-stat"><div class="l">' + escapeHtml(O.name) + '</div><div class="v">' + Math.min(O.w, O.cap) + '/' + O.cap + ' W</div></div></div>';
+  }
+
   /* ===== Defaults ===== */
-  function blankChar(name, rea, int) { return { name, meta: '', karma: '', attr: { kon:3, ges:3, rea:rea, sta:3, wil:3, log:3, int:int, cha:3 }, edge:3, aktedge:3, essenz:6, magie:0, deck:{ dv:0, fw:0, ang:0, schl:0 }, iniBonus:{}, panzer:0, dk:0, dmgP:0, dmgS:0, mods:[], skills:[{ name:'Wahrnehmung', attr:'int', rating:3 }], weapons:[], spells:[], contacts:[], gear:[], notes:'', present:true, activeMode:'Kampf & AR' }; }
+  function blankChar(name, rea, int) { return { name, meta: '', karma: '', attr: { kon:3, ges:3, rea:rea, sta:3, wil:3, log:3, int:int, cha:3 }, edge:3, aktedge:3, essenz:6, magie:0, deck:{ dv:0, fw:0, ang:0, schl:0 }, iniBonus:{}, panzer:0, dk:0, dmgP:0, dmgS:0, mods:[], skills:[{ name:'Wahrnehmung', attr:'int', rating:3 }], weapons:[], spells:[], contacts:[], gear:[], notes:'', present:true, brLevel:2, brItems:{}, brArmor:0, activeMode:'Kampf & AR' }; }
   function woodyChar() { return { name:'Woody', meta:'Mensch / Herm. Zauberer', karma:'', attr:{ kon:3, ges:2, rea:4, sta:2, wil:6, log:8, int:5, cha:8 }, edge:1, aktedge:1, essenz:6, magie:3, deck:{ dv:0, fw:0, ang:0, schl:0 }, iniBonus:{ iniKampf:2 }, panzer:9, dk:0, dmgP:0, dmgS:0, mods:[],
     skills:[{ name:'Akrobatik', attr:'ges', rating:4 },{ name:'Arkana', attr:'log', rating:3 },{ name:'Askennen', attr:'int', rating:6 },{ name:'Astralkampf', attr:'wil', rating:3 },{ name:'Wahrnehmung', attr:'int', rating:4 },{ name:'Pistolen', attr:'ges', rating:2 },{ name:'Einschüchtern', attr:'cha', rating:3 },{ name:'Spruchzauberei', attr:'mag', rating:6 },{ name:'Herbeirufen', attr:'mag', rating:4 },{ name:'Antimagie', attr:'mag', rating:6 }],
     weapons:[{ name:'Ares L.Fire 70 (Dienstpistole)', pool:4, gen:'7', dmg:'6K', dk:'-', rw:'-', mod:'HM', seite:'16 Schuss / S.428' },{ name:'Streetline (Tarnholster)', pool:4, gen:'4', dmg:'6K', dk:'-', rw:'-', mod:'HM', seite:'6 Schuss / S.427' },{ name:'Waffenfokus (Kurzschwert)', pool:2, gen:'6', dmg:'5K', dk:'-2', rw:'1', mod:'-', seite:'' },{ name:'Waffenfokus (Kurzschw./Astral)', pool:14, gen:'10', dmg:'11K', dk:'-', rw:'1', mod:'-', seite:'' },{ name:'Übungsaxt an der Wand', pool:2, gen:'4', dmg:'7K', dk:'-4', rw:'2', mod:'-', seite:'' }],
@@ -718,7 +964,7 @@
     contacts:[{ name:'Laurealka', ort:'Pomorya', arch:'Schamanin', inf:'4', loy:'3' },{ name:'Kim / Rüdiger', ort:'Rheine', arch:'Konzernmitarbeiter', inf:'2', loy:'4' },{ name:'Guido / Xratio', ort:'Siegburg', arch:'Mag. Verz. / Schieber', inf:'2', loy:'5' },{ name:'Bernd / Terconal', ort:'Bad Oeynhausen', arch:'Ex-Bundeswehr-Offizier', inf:'2', loy:'2' }],
     gear:[{ name:'Synapsenbeschleuniger (Delta)', typ:'Bioware', stufe:'II', ess:'-0,5', notiz:'Eurokriege' },{ name:'Zerebralbooster (Delta)', typ:'Bioware', stufe:'III', ess:'-0,3', notiz:'Eurokriege' },{ name:'Panzerweste', typ:'Panzerung', stufe:'9', ess:'', notiz:'500¥' },{ name:'Komlink (Meta) + Troden', typ:'Elektronik', stufe:'1', ess:'', notiz:'170¥' },{ name:'AR-Handschuhe', typ:'Elektronik', stufe:'', ess:'', notiz:'150¥' }],
     notes:'Hermetischer Zauberer. Astralkampf via Waffenfokus Kurzschwert (14W6).',
-    present:true, activeMode:'Kampf & AR' }; }
+    present:true, brLevel:3, brItems:{}, brArmor:1, activeMode:'Kampf & AR' }; }
   function defaultRoster() { return { chars: [woodyChar(), blankChar('Ralf', 4, 4), blankChar('Frank', 5, 4), blankChar('Johannes', 3, 5)], nscs: [], activeChar: 0 }; }
 
   /* ===== Persistenz ===== */
@@ -726,7 +972,7 @@
   const canStore = storageOK();
   function setStatus(t, c) { $('saveStatus').textContent = t; $('saveStatus').className = 'save-status' + (c ? ' ' + c : ''); }
   let statusT; function flash(t) { setStatus(t, 'ok'); clearTimeout(statusT); statusT = setTimeout(() => setStatus(canStore ? 'Auto-Speicherung aktiv' : '⚠ Browser speichert lokal nicht — nutze Export/Import', canStore ? '' : 'warn'), 1600); }
-  function saveAll() { if (!canStore) return; try { readSheetIntoChar(); localStorage.setItem(STORAGE_KEY, JSON.stringify({ chars, nscs, activeChar })); flash('✓ gespeichert'); } catch (e) { setStatus('⚠ Speichern fehlgeschlagen', 'warn'); } }
+  function saveAll() { if (!canStore) return; try { readSheetIntoChar(); localStorage.setItem(STORAGE_KEY, JSON.stringify({ chars, nscs, activeChar, settings })); flash('✓ gespeichert'); } catch (e) { setStatus('⚠ Speichern fehlgeschlagen', 'warn'); } }
   function loadAll() { if (!canStore) return null; try { const r = localStorage.getItem(STORAGE_KEY); if (!r) return null; const o = JSON.parse(r); if (!o || !Array.isArray(o.chars) || !o.chars.length) return null; return o; } catch (e) { return null; } }
   let saveT; function scheduleSave() { if (!canStore) return; clearTimeout(saveT); saveT = setTimeout(saveAll, 350); }
 
@@ -735,6 +981,72 @@
   $('addWeapon').onclick = () => { $('weaponRows').appendChild(makeWeaponRow({})); onSheetInput(); };
   $('addSpell').onclick = () => { $('spellRows').appendChild(makeSpellRow({})); onSheetInput(); };
   $('soakRoll').onclick = rollSoak;
+  // ===== Drain-Kraft-Optimierer =====
+  const DC = { colors: { safe: '#3a8f22', caution: '#c07a0a', risky: '#b84a18', danger: '#b01e1e' }, labels: { safe: 'sicher', caution: 'Vorsicht', risky: 'riskant', danger: 'tödlich' }, chars: [], hover: null, CX: 240, CY: 240, R: 196, MAXF: 12, START: -Math.PI / 2, GAP: 0.022 };
+  function dcZone(force, mag, dr) { const dv = Math.ceil(force / 2); const net = Math.max(0, dv - dr / 3); const phys = force > mag; if (!phys && net <= 1) return 'safe'; if (!phys) return 'caution'; if (net <= 2) return 'risky'; return 'danger'; }
+  function dcData() {
+    return chars.map(c => { const a = effAttrsData(c); const da = c.drainAttr || 'log'; const dr = (a.wil || 0) + (a[da] || 0) + sumModsData(c.mods, 'entzug'); return { name: c.name || '?', meta: c.meta || '', mag: a.magie || 0, wil: a.wil || 0, da: da, daVal: a[da] || 0, dr: dr }; }).filter(x => x.mag > 0);
+  }
+  function dcRF(f) { return DC.R * f / DC.MAXF; }
+  function dcDraw() {
+    const cv = $('dcCanvas'); if (!cv || !cv.getContext) return; const ctx = cv.getContext('2d'); if (!ctx) return;
+    const CX = DC.CX, CY = DC.CY, R = DC.R, MAXF = DC.MAXF, list = DC.chars;
+    ctx.clearRect(0, 0, 480, 480); ctx.fillStyle = '#14110e'; ctx.fillRect(0, 0, 480, 480);
+    if (!list.length) { ctx.fillStyle = '#9a8b78'; ctx.font = '13px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Keine Magieanwender im Team (MAG 0).', CX, CY); return; }
+    const N = list.length, SECT = 2 * Math.PI / N;
+    list.forEach((ch, i) => {
+      const a0 = DC.START + i * SECT + DC.GAP / 2, a1 = DC.START + (i + 1) * SECT - DC.GAP / 2;
+      for (let f = MAXF; f >= 1; f--) {
+        const hov = DC.hover && DC.hover.i === i && DC.hover.f === f;
+        ctx.beginPath(); ctx.arc(CX, CY, dcRF(f), a0, a1); ctx.arc(CX, CY, dcRF(f - 1), a1, a0, true); ctx.closePath();
+        ctx.fillStyle = DC.colors[dcZone(f, ch.mag, ch.dr)]; ctx.globalAlpha = hov ? 1 : 0.9; ctx.fill(); ctx.globalAlpha = 1;
+        if (hov) { ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); }
+      }
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 1;
+      for (let f = 1; f <= MAXF; f++) { ctx.beginPath(); ctx.arc(CX, CY, dcRF(f), a0, a1); ctx.stroke(); }
+      if (ch.mag >= 1) { ctx.save(); ctx.setLineDash([5, 4]); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(CX, CY, dcRF(Math.min(ch.mag, MAXF)), a0, a1); ctx.stroke(); ctx.restore(); }
+      const am = (a0 + a1) / 2, lx = CX + Math.cos(am) * (R + 24), ly = CY + Math.sin(am) * (R + 24);
+      ctx.textAlign = Math.abs(Math.cos(am)) < 0.3 ? 'center' : (Math.cos(am) > 0 ? 'left' : 'right'); ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#f5e9d8'; ctx.font = 'bold 12px sans-serif'; ctx.fillText(ch.name, lx, ly);
+      ctx.fillStyle = '#9a8b78'; ctx.font = '9px sans-serif'; ctx.fillText('MAG ' + ch.mag + ' · DR ' + ch.dr, lx, ly + 12);
+    });
+    ctx.strokeStyle = '#14110e'; ctx.lineWidth = 2;
+    for (let i = 0; i < N; i++) { const a = DC.START + i * SECT; ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(CX + Math.cos(a) * R, CY + Math.sin(a) * R); ctx.stroke(); }
+    ctx.font = 'bold 8px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.fillStyle = 'rgba(255,255,255,.85)';
+    for (let f = 1; f <= MAXF; f++) { const r = (dcRF(f) + dcRF(f - 1)) / 2; ctx.strokeText(String(f), CX, CY - r); ctx.fillText(String(f), CX, CY - r); }
+  }
+  function dcPick(px, py) {
+    const dx = px - DC.CX, dy = py - DC.CY, dist = Math.sqrt(dx * dx + dy * dy), N = DC.chars.length;
+    if (!N || dist > DC.R || dist < 1) return null;
+    let ang = Math.atan2(dy, dx) - DC.START; ang = ((ang % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const i = Math.min(N - 1, Math.floor(ang / (2 * Math.PI / N)));
+    const f = Math.max(1, Math.min(DC.MAXF, Math.ceil(dist / (DC.R / DC.MAXF))));
+    return { i: i, f: f };
+  }
+  function dcShowInfo(pick) {
+    const el = $('dcInfo'); if (!el) return;
+    if (!pick) { el.innerHTML = '<span style="color:#9a8b78">Über einen Sektor fahren oder tippen — zeigt Entzug-DV, Typ und Ø Schaden für die Kraftstufe.</span>'; return; }
+    const ch = DC.chars[pick.i], f = pick.f, dv = Math.ceil(f / 2), phys = f > ch.mag, exp = ch.dr / 3, net = Math.max(0, dv - exp), z = dcZone(f, ch.mag, ch.dr);
+    el.innerHTML = '<b>' + escapeHtml(ch.name) + '</b> · Kraftstufe <b>' + f + '</b> · Entzug-DV <b>' + dv + '</b> · ' +
+      (phys ? '<b style="color:#ff7a6a">körperlich</b> (Kraft &gt; MAG ' + ch.mag + ')' : 'geistig') +
+      '<br>Entzugs-Pool <b>' + ch.dr + 'W6</b> (WIL ' + ch.wil + ' + ' + ch.da.toUpperCase() + ' ' + ch.daVal + ') → Ø ' + exp.toFixed(1) + ' Erfolge · Ø Schaden <b>' + net.toFixed(1) + '</b> · <span style="color:' + DC.colors[z] + ';font-weight:700">' + DC.labels[z] + '</span>';
+  }
+  function dcEvt(e) {
+    const cv = $('dcCanvas'), r = cv.getBoundingClientRect(); if (!r.width) return;
+    const t = (e.touches && e.touches[0]) ? e.touches[0] : e;
+    DC.hover = dcPick((t.clientX - r.left) * (480 / r.width), (t.clientY - r.top) * (480 / r.height));
+    dcDraw(); dcShowInfo(DC.hover);
+  }
+  function dcOpen() { readSheetIntoChar(); DC.chars = dcData(); DC.hover = null; $('dcOverlay').hidden = false; dcDraw(); dcShowInfo(null); }
+  function dcClose() { $('dcOverlay').hidden = true; }
+  $('drainChartBtn').onclick = dcOpen;
+  $('dcClose').onclick = dcClose;
+  $('dcOverlay').onclick = e => { if (e.target === $('dcOverlay')) dcClose(); };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('dcOverlay').hidden) dcClose(); });
+  $('dcCanvas').addEventListener('mousemove', dcEvt);
+  $('dcCanvas').addEventListener('mouseleave', () => { DC.hover = null; dcDraw(); dcShowInfo(null); });
+  $('dcCanvas').addEventListener('touchstart', e => { e.preventDefault(); dcEvt(e); }, { passive: false });
+  $('dcCanvas').addEventListener('touchmove', e => { e.preventDefault(); dcEvt(e); }, { passive: false });
   $('drainRoll').onclick = rollDrain;
   $('addContact').onclick = () => { $('contactRows').appendChild(makeContactRow({})); onSheetInput(); };
   $('addGear').onclick = () => { $('gearRows').appendChild(makeGearRow({})); onSheetInput(); };
@@ -746,14 +1058,19 @@
   $('delChar').onclick = delChar;
   $('addNsc').onclick = () => { nscs.push({ name: 'NSC ' + (nscs.length + 1), base: 6, dice: 1 }); renderIniRoster(); saveAll(); };
   $('iniRollBtn').onclick = () => { iniRound = 1; rollAndRender(); };
+  $('bl-level').onchange = () => { chars[activeChar].brLevel = Math.max(2, Math.min(5, intVal($('bl-level')))); renderBlackrock(); saveAll(); };
+  $('bl-melee').onclick = blMelee;
+  $('bl-ranged').onclick = blRanged;
+  $('bl-armor').onchange = () => { chars[activeChar].brArmor = Math.max(0, intVal($('bl-armor'))); saveAll(); };
+  $('bl-strmap').onchange = () => { settings.strMap = $('bl-strmap').value; saveAll(); };
 
-  $('exportBtn').onclick = () => { readSheetIntoChar(); const blob = new Blob([JSON.stringify({ chars, nscs, activeChar }, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'blackrock-sr2036-roster.json'; a.click(); URL.revokeObjectURL(a.href); };
+  $('exportBtn').onclick = () => { readSheetIntoChar(); const blob = new Blob([JSON.stringify({ chars, nscs, activeChar, settings }, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); const pad = n => String(n).padStart(2, '0'); const dt = new Date(); const ts = dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()) + '_' + pad(dt.getHours()) + '-' + pad(dt.getMinutes()); a.download = 'blackrock-sr2036-roster_' + ts + '.json'; a.click(); URL.revokeObjectURL(a.href); };
   $('importBtn').onclick = () => $('importFile').click();
-  $('importFile').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const o = JSON.parse(r.result); if (!o || !Array.isArray(o.chars)) throw new Error('Format'); chars = o.chars; nscs = o.nscs || []; activeChar = o.activeChar || 0; if (activeChar >= chars.length) activeChar = 0; applyCharToSheet(chars[activeChar]); renderCharTabs(); renderIniRoster(); saveAll(); flash('✓ importiert'); } catch (err) { setStatus('⚠ Datei nicht lesbar', 'warn'); } }; r.readAsText(f); e.target.value = ''; };
+  $('importFile').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const o = JSON.parse(r.result); if (!o || !Array.isArray(o.chars)) throw new Error('Format'); chars = o.chars; nscs = o.nscs || []; activeChar = o.activeChar || 0; if (activeChar >= chars.length) activeChar = 0; settings = o.settings || { strMap: 'x' }; applyCharToSheet(chars[activeChar]); renderCharTabs(); renderIniRoster(); saveAll(); flash('✓ importiert'); } catch (err) { setStatus('⚠ Datei nicht lesbar', 'warn'); } }; r.readAsText(f); e.target.value = ''; };
   $('resetBtn').onclick = () => { if (!confirm('Alles auf Standard zurücksetzen? Gespeicherte Charaktere gehen verloren.')) return; const d = defaultRoster(); chars = d.chars; nscs = d.nscs; activeChar = 0; applyCharToSheet(chars[0]); renderCharTabs(); renderIniRoster(); saveAll(); };
 
   /* ===== Tabs ===== */
-  function showTab(tab) { const cur = document.querySelector('.tab.active'); if (cur && cur.dataset.tab === 'chars') readSheetIntoChar(); document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x.dataset.tab === tab)); document.querySelectorAll('.panel').forEach(x => x.classList.remove('active')); $('panel-' + tab).classList.add('active'); if (tab === 'ini') renderIniRoster(); if (tab === 'chars') renderCharTabs(); }
+  function showTab(tab) { const cur = document.querySelector('.tab.active'); if (cur && cur.dataset.tab === 'chars') readSheetIntoChar(); document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x.dataset.tab === tab)); document.querySelectorAll('.panel').forEach(x => x.classList.remove('active')); $('panel-' + tab).classList.add('active'); if (tab === 'ini') renderIniRoster(); if (tab === 'chars') renderCharTabs(); if (tab === 'blackrock') renderBlackrock(); }
   document.querySelectorAll('.tab').forEach(t => t.onclick = () => showTab(t.dataset.tab));
   function goToChar(i) { try { history.pushState({ tab: 'chars', char: i }, ''); } catch (e) {} showTab('chars'); switchChar(i); }
   window.addEventListener('popstate', e => { const s = e.state || {}; const tab = s.tab || 'ini'; showTab(tab); if (tab === 'chars' && s.char != null) switchChar(s.char); });
@@ -764,13 +1081,13 @@
 
   /* ===== Start ===== */
   const loaded = loadAll() || defaultRoster();
-  chars = loaded.chars; nscs = loaded.nscs || []; activeChar = loaded.activeChar || 0; if (activeChar >= chars.length) activeChar = 0;
+  chars = loaded.chars; nscs = loaded.nscs || []; activeChar = loaded.activeChar || 0; if (activeChar >= chars.length) activeChar = 0; settings = loaded.settings || { strMap: 'x' };
   applyCharToSheet(chars[activeChar]); renderCharTabs(); renderIniRoster();
   if (!canStore) setStatus('⚠ Browser speichert lokal nicht — nutze Export/Import', 'warn');
 </script>
 
 <footer style="margin-top:28px;padding-top:14px;border-top:1px solid #eee;font-size:11px;color:#999;text-align:center;line-height:1.6;">
-  Blackrock: Shadowrun 2036 &middot; v1.0.0<br>
+  Blackrock: Shadowrun 2036 &middot; v2.0.0<br>
   Inoffizielles Fan-Tool &middot; l&auml;uft lokal im Browser &mdash; keine Server, keine Cookies
 </footer>
 </body>
